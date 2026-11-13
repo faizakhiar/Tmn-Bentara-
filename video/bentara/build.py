@@ -60,7 +60,7 @@ SFX = [
     # eta
     ("swoosh", 40.5, 0.5), ("sparkle", 42.95, 0.5),
     # location
-    ("whoosh", 43.85, 0.8), ("pop", 46.32, 0.55), ("pop", 47.5, 0.55), ("pop", 48.64, 0.55),
+    ("whoosh", 43.85, 0.8), ("pop", 44.6, 0.45), ("pop", 46.32, 0.55), ("pop", 47.5, 0.55), ("pop", 48.64, 0.55), ("whoosh", 49.45, 0.6),
     ("tick", 51.17, 0.7), ("tick", 52.35, 0.7), ("tick", 53.29, 0.7), ("tick", 54.25, 0.7),
     # promo
     ("whoosh", 55.1, 0.8), ("pop", 56.36, 0.6), ("sparkle", 57.16, 0.45),
@@ -92,6 +92,73 @@ HOUSE = ('<svg viewBox="0 0 64 64" width="{w}" height="{w}"><path d="M8 30 L32 1
          'fill="currentColor"/><rect x="26" y="38" width="12" height="18" fill="rgba(0,0,0,.35)"/></svg>')
 PIN = ('<svg viewBox="0 0 48 64" width="{w}" height="{h}"><path d="M24 2C12 2 3 11 3 23c0 16 21 39 21 39s21-23 21-39C45 11 36 2 24 2z" '
        'fill="currentColor"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg>')
+
+
+# ---------------------------------------------------------------- map (OpenStreetMap data, assets/map/*.json)
+import json, math
+LON0, LAT0 = 101.53, 2.96
+KX = 111.32 * math.cos(math.radians(2.95)) * 100   # world px per degree lon (100 px = 1 km)
+KY = 110.57 * 100
+
+
+def W(lon, lat):
+    return (round((lon - LON0) * KX, 1), round(-(lat - LAT0) * KY, 1))
+
+
+def road_paths(key):
+    feats = json.load(open(f"assets/map/{key}.json"))["features"]
+    out = []
+    for f in feats:
+        g = f["geometry"]
+        lines = [g["coordinates"]] if g["type"] == "LineString" else g["coordinates"] if g["type"] == "MultiLineString" else []
+        for ln in lines:
+            pts = [W(*c) for c in ln]
+            out.append("M" + " L".join(f"{x},{y}" for x, y in pts))
+    return out
+
+
+def anchor(key, lon, lat):
+    tx, ty = W(lon, lat)
+    best = None
+    for f in json.load(open(f"assets/map/{key}.json"))["features"]:
+        if f["geometry"]["type"] != "LineString":
+            continue
+        for c in f["geometry"]["coordinates"]:
+            x, y = W(*c)
+            d = (x - tx) ** 2 + (y - ty) ** 2
+            if best is None or d < best[0]:
+                best = (d, x, y)
+    return best[1], best[2]
+
+
+POIS = {k: W(*v) for k, v in json.load(open("assets/map/pois.json")).items()}
+HWY = {  # id: (osm file, label, preferred label spot lon/lat)
+    "skve": ("skve", "SKVE", 101.575, 2.945),
+    "kesas": ("kesas", "KESAS", 101.50, 3.012),
+    "wce": ("wce", "WCE", 101.488, 2.96),
+    "lksa": ("lksa", "LKSA", 101.533, 3.02),
+}
+
+
+def map_svg():
+    parts = []
+    for k in ("ft5", "kebun"):
+        parts += [f'<path class="mroad" d="{d}"/>' for d in road_paths(k)]
+    for hid, (f, _, _, _) in HWY.items():
+        parts += [f'<path class="mhwy" d="{d}"/>' for d in road_paths(f)]
+    for hid, (f, _, _, _) in HWY.items():
+        parts.append(f'<g id="hl-{hid}" class="mhl">' + "".join(f'<path pathLength="1" d="{d}"/>' for d in road_paths(f)) + "</g>")
+    parts += [f'<path class="mpipit" d="{d}"/>' for d in road_paths("pipit")]
+    sx, sy = POIS["site"]
+    for i, k in enumerate(("tropicana", "eco", "rimbayu"), 1):
+        x, y = POIS[k]
+        parts.append(f'<path id="mlk{i}" class="mlink" pathLength="1" d="M{sx},{sy} L{x},{y}"/>')
+    return "\n          ".join(parts)
+
+
+def map_js_data():
+    anchors = {hid: anchor(f, lo, la) for hid, (f, _, lo, la) in HWY.items()}
+    return json.dumps({"pois": POIS, "hwy": anchors})
 
 
 def houses(cls, n=8, w=96):
@@ -229,21 +296,28 @@ HTML = r"""<!doctype html>
 
       /* location */
       #loc { background: #18191c; }
-      #loc .mapgrid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.05) 2px, transparent 2px); background-size: 72px 72px; }
-      #loc svg.roads { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-      #loc .road { fill: none; stroke: rgba(255,255,255,.14); stroke-width: 26; stroke-linecap: round; }
-      #loc .link { fill: none; stroke: var(--sand); stroke-width: 6; stroke-dasharray: 14 14; }
-      #loc-head { position: absolute; left: 60px; top: 190px; }
+      #loc .mapgrid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.04) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.04) 2px, transparent 2px); background-size: 72px 72px; }
+      #loc svg.map { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      #loc .mroad { fill: none; stroke: rgba(255,255,255,.16); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+      #loc .mhwy { fill: none; stroke: rgba(255,255,255,.3); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+      #loc .mhl { opacity: 0; } #loc .mhl path { fill: none; stroke: #3ecf7a; stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+      #loc .mpipit { fill: none; stroke: var(--sand); stroke-width: 9; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+      #loc .mlink { fill: none; stroke: var(--sand); stroke-width: 5; stroke-dasharray: .02 .02; vector-effect: non-scaling-stroke; opacity: 0; }
+      #loc-head { position: absolute; left: 60px; top: 190px; z-index: 2; }
       #loc-head .mega { font-size: 104px; margin-top: 12px; }
-      .poi { position: absolute; display: flex; align-items: center; gap: 14px; }
-      .poi .p { color: #fff; }
-      .poi .n { padding: 14px 24px; border-radius: 16px; background: #fff; color: var(--ink-dark); font-family: var(--font-display); font-weight: 800; font-size: 38px; white-space: nowrap; }
-      #poi-home .p { color: var(--sand); }
-      #poi-home .n { background: var(--sand); }
-      #hwy { position: absolute; left: 60px; right: 60px; top: 1500px; display: flex; gap: 18px; }
+      #loc .topfade { position: absolute; left: 0; right: 0; top: 0; height: 460px; background: linear-gradient(#18191c 55%, rgba(24,25,28,0)); z-index: 1; }
+      #loc .botfade { position: absolute; left: 0; right: 0; bottom: 0; height: 560px; background: linear-gradient(rgba(24,25,28,0), #18191c 45%); z-index: 1; }
+      .poi { position: absolute; left: 0; top: 0; z-index: 1; }
+      .poi .p { position: absolute; left: -20px; top: -52px; color: #fff; }
+      .poi .n { position: absolute; top: -50px; padding: 12px 22px; border-radius: 14px; background: #fff; color: var(--ink-dark); font-family: var(--font-display); font-weight: 800; font-size: 36px; white-space: nowrap; }
+      .poi .n.r { left: 34px; } .poi .n.l { right: 34px; }
+      #poi-home .p { color: var(--sand); left: -24px; top: -64px; }
+      #poi-home .n { background: var(--sand); top: 6px; left: -110px; }
+      .hlabel { position: absolute; left: 0; top: 0; z-index: 1; margin: -32px 0 0 -70px; width: 140px; text-align: center; padding: 10px 0; border-radius: 12px; background: var(--green); border: 4px solid #fff; font-family: var(--font-display); font-weight: 900; font-size: 34px; letter-spacing: .04em; opacity: 0; }
+      #hwy { position: absolute; left: 60px; right: 60px; top: 1560px; display: flex; gap: 18px; z-index: 2; }
       .hw { flex: 1; text-align: center; padding: 22px 0; border-radius: 16px; background: var(--green); border: 5px solid #fff; font-family: var(--font-display); font-weight: 900; font-size: 46px; letter-spacing: .04em; }
-      #hwy-label { position: absolute; left: 60px; top: 1420px; }
-      #loc-note { position: absolute; right: 60px; top: 1690px; font-size: 28px; opacity: .55; }
+      #hwy-label { position: absolute; left: 60px; top: 1480px; z-index: 2; }
+      #loc-note { position: absolute; right: 60px; top: 1760px; font-size: 28px; opacity: .55; z-index: 2; }
 
       /* promo */
       #promo { background: var(--sand); color: var(--ink-dark); }
@@ -383,25 +457,25 @@ HTML = r"""<!doctype html>
         </div>
       </div>
 
-      <!-- 8 · LOCATION: nearby townships + highways (schematic) -->
+      <!-- 8 · LOCATION: real road geometry (OpenStreetMap), animated camera -->
       <div id="loc" class="clip" __SC_loc__ data-track-index="1">
         <div class="mapgrid"></div>
-        <svg class="roads" data-layout-allow-overflow viewBox="0 0 1080 1920">
-          <path class="road" d="M-40 1180 C 260 1120, 420 980, 600 900 S 900 700, 1120 640" />
-          <path class="road" d="M180 1960 C 260 1500, 380 1200, 420 760 S 520 420, 560 300" />
-          <path class="road" d="M-40 820 C 300 860, 700 1040, 1120 1080" />
-          <path class="link" id="lk1" d="M330 1170 C 460 1080, 520 900, 590 790" />
-          <path class="link" id="lk2" d="M330 1170 C 520 1120, 700 1000, 820 960" />
-          <path class="link" id="lk3" d="M330 1170 C 460 1000, 560 720, 620 600" />
+        <svg class="map" data-layout-allow-overflow viewBox="0 0 1080 1920">
+          <g id="mworld">
+          __MAPSVG__
+          </g>
         </svg>
+        <div class="poi" id="poi-home"><div class="p">__PIN64__</div><div class="n">Tapak projek</div></div>
+        <div class="poi" id="poi-1"><div class="p">__PIN52__</div><div class="n l">Tropicana Aman</div></div>
+        <div class="poi" id="poi-2"><div class="p">__PIN52__</div><div class="n r">Eco Sanctuary</div></div>
+        <div class="poi" id="poi-3"><div class="p">__PIN52__</div><div class="n l">Bandar Rimbayu</div></div>
+        <div class="hlabel" id="hl-lb-skve">SKVE</div><div class="hlabel" id="hl-lb-kesas">KESAS</div>
+        <div class="hlabel" id="hl-lb-wce">WCE</div><div class="hlabel" id="hl-lb-lksa">LKSA</div>
+        <div class="topfade"></div><div class="botfade"></div>
         <div id="loc-head"><div class="kicker" style="color:var(--sand)">Lokasi</div><div class="mega">Dekat dengan</div></div>
-        <div class="poi" id="poi-home" style="left:280px;top:1100px"><div class="p">__PIN64__</div><div class="n">Tapak projek</div></div>
-        <div class="poi" id="poi-1" style="left:560px;top:700px"><div class="p">__PIN52__</div><div class="n">Tropicana Aman</div></div>
-        <div class="poi" id="poi-2" style="left:600px;top:900px"><div class="p">__PIN52__</div><div class="n">Eco Sanctuary</div></div>
-        <div class="poi" id="poi-3" style="left:470px;top:520px"><div class="p">__PIN52__</div><div class="n">Bandar Rimbayu</div></div>
         <div id="hwy-label" class="kicker" style="color:var(--sand)">Akses mudah</div>
         <div id="hwy"><div class="hw" id="hw1">SKVE</div><div class="hw" id="hw2">KESAS</div><div class="hw" id="hw3">WCE</div><div class="hw" id="hw4">LKSA</div></div>
-        <div id="loc-note">Ilustrasi, bukan ikut skala</div>
+        <div id="loc-note">Data peta &copy; OpenStreetMap</div>
       </div>
 
       <!-- 9 · PROMO -->
@@ -531,18 +605,42 @@ HTML = r"""<!doctype html>
         .fromTo("#eta-dot, #eta-lbl", { opacity: 0, scale: .5 }, { opacity: 1, scale: 1, duration: .3, ease: "back.out(2)" }, v(42.95))
         .to("#eta-head em", { scale: 1.12, duration: .2, yoyo: true, repeat: 1, display: "inline-block", transformOrigin: "0 50%" }, v(42.99));
 
-      /* 8 · LOCATION */
-      tl.fromTo("#loc .roads .road", { opacity: 0 }, { opacity: 1, duration: .6, stagger: .1 }, v(44.0))
+      /* 8 · LOCATION: camera over real road geometry; pins/labels follow the camera */
+      const MAP = __MAPDATA__;
+      const MC = { s: 1.2, x: -20, y: 260 };           // camera: scale + world point at screen focus
+      const FX = 540, FY = 960;
+      const toScr = (wx, wy) => [FX + (wx - MC.x) * MC.s, FY + (wy - MC.y) * MC.s];
+      const place = (sel, w) => { const [x, y] = toScr(w[0], w[1]); const el = document.querySelector(sel); el.style.left = x + "px"; el.style.top = y + "px"; };
+      const applyCam = () => {
+        document.querySelector("#mworld").setAttribute("transform", `translate(${FX - MC.x * MC.s} ${FY - MC.y * MC.s}) scale(${MC.s})`);
+        place("#poi-home", MAP.pois.site); place("#poi-1", MAP.pois.tropicana); place("#poi-2", MAP.pois.eco); place("#poi-3", MAP.pois.rimbayu);
+        for (const k in MAP.hwy) place("#hl-lb-" + k, MAP.hwy[k]);
+      };
+      const TOWNS = { s: 1.7, x: -13, y: 278 };        // site + three townships
+      const WIDE = { s: .72, x: -110, y: -60 };          // site + SKVE/WCE/KESAS/LKSA
+      tl.set(MC, { ...TOWNS, s: 1.2, onUpdate: applyCam }, v(44.0))
+        .call(applyCam, null, v(44.0))
+        .to(MC, { ...TOWNS, duration: 1.4, ease: "power3.out", onUpdate: applyCam }, v(44.0))
+        .fromTo("#loc svg.map", { opacity: 0 }, { opacity: 1, duration: .5 }, v(44.0))
         .fromTo("#loc-head", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .4, ease: "power3.out" }, v(44.15));
       popIn("#poi-home", 44.6, { y: -60 });
-      [["#lk1", "#poi-1", 46.32], ["#lk2", "#poi-2", 47.5], ["#lk3", "#poi-3", 48.64]].forEach(([lk, p, t]) => {
-        tl.fromTo(lk, { opacity: 0, attr: { "stroke-dashoffset": 400 } }, { opacity: 1, attr: { "stroke-dashoffset": 0 }, duration: .5, ease: "power2.out" }, v(t - .15));
+      [["#mlk1", "#poi-1", 46.32], ["#mlk2", "#poi-2", 47.5], ["#mlk3", "#poi-3", 48.64]].forEach(([lk, p, t]) => {
+        tl.fromTo(lk, { opacity: 0 }, { opacity: 1, duration: .3 }, v(t - .15));
         popIn(p, t, { y: -50 });
       });
-      tl.fromTo("#hwy-label", { opacity: 0 }, { opacity: 1, duration: .3 }, v(49.83));
-      [["#hw1", 51.17], ["#hw2", 52.35], ["#hw3", 53.29], ["#hw4", 54.25]].forEach(([h, t]) => popIn(h, t, { y: 60 }));
+      // "Akses pun mudah..." -> pull back to show the highway network
+      tl.to(MC, { ...WIDE, duration: 1.3, ease: "power3.inOut", onUpdate: applyCam }, v(49.6))
+        .to("#poi-1 .n, #poi-2 .n, #poi-3 .n, .mlink", { opacity: 0, duration: .3 }, v(49.6))
+        .fromTo("#hwy-label", { opacity: 0 }, { opacity: 1, duration: .3 }, v(49.83));
+      [["skve", "#hw1", 51.17], ["kesas", "#hw2", 52.35], ["wce", "#hw3", 53.29], ["lksa", "#hw4", 54.25]].forEach(([k, h, t]) => {
+        tl.fromTo(`#hl-${k}`, { opacity: 0 }, { opacity: 1, duration: .25 }, v(t - .05))
+          .fromTo(`#hl-${k} path`, { attr: { "stroke-width": 30 } }, { attr: { "stroke-width": 13 }, duration: .5, ease: "power2.out" }, v(t - .05))
+          .fromTo(`#hl-lb-${k}`, { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .3, ease: "back.out(2)" }, v(t));
+        popIn(h, t, { y: 60 });
+      });
       tl.fromTo("#loc-note", { opacity: 0 }, { opacity: .55, duration: .3 }, v(46.0));
-      outUp("#loc-head, .poi, #hwy, #hwy-label, #loc-note", 55.0);
+      tl.to(MC, { s: .66, duration: 1.4, ease: "none", onUpdate: applyCam }, v(53.7));
+      outUp("#loc-head, .poi, .hlabel, #hwy, #hwy-label, #loc-note", 55.0);
 
       /* 9 · PROMO */
       tl.fromTo("#rays", { rotation: 0 }, { rotation: 40, duration: 9.1, ease: "none" }, v(55.25));
@@ -583,7 +681,8 @@ html = (html.replace("__FILM__", str(FILM)).replace("__VO_START__", str(VO_START
         .replace("VO_LEN_JS", str(VO_LEN)).replace("__SFX__", sfx_tags())
         .replace("__UNITS__", houses("unit", 8, 96)).replace("__CUNITS__", houses("cunit", 8, 70))
         .replace("__PIN90__", PIN.format(w=68, h=90)).replace("__PIN64__", PIN.format(w=48, h=64))
-        .replace("__PIN52__", PIN.format(w=40, h=52)))
+        .replace("__PIN52__", PIN.format(w=40, h=52))
+        .replace("__MAPSVG__", map_svg()).replace("__MAPDATA__", map_js_data()))
 assert "__" not in html.replace("window.__timelines", ""), "unreplaced placeholder"
 open("index.html", "w").write(html)
 print("index.html written, film", FILM, "s,", len(SFX), "sfx cues")

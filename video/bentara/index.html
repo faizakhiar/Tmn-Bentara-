@@ -129,21 +129,28 @@
 
       /* location */
       #loc { background: #18191c; }
-      #loc .mapgrid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.05) 2px, transparent 2px); background-size: 72px 72px; }
-      #loc svg.roads { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-      #loc .road { fill: none; stroke: rgba(255,255,255,.14); stroke-width: 26; stroke-linecap: round; }
-      #loc .link { fill: none; stroke: var(--sand); stroke-width: 6; stroke-dasharray: 14 14; }
-      #loc-head { position: absolute; left: 60px; top: 190px; }
+      #loc .mapgrid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.04) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.04) 2px, transparent 2px); background-size: 72px 72px; }
+      #loc svg.map { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      #loc .mroad { fill: none; stroke: rgba(255,255,255,.16); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+      #loc .mhwy { fill: none; stroke: rgba(255,255,255,.3); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+      #loc .mhl { opacity: 0; } #loc .mhl path { fill: none; stroke: #3ecf7a; stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+      #loc .mpipit { fill: none; stroke: var(--sand); stroke-width: 9; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+      #loc .mlink { fill: none; stroke: var(--sand); stroke-width: 5; stroke-dasharray: .02 .02; vector-effect: non-scaling-stroke; opacity: 0; }
+      #loc-head { position: absolute; left: 60px; top: 190px; z-index: 2; }
       #loc-head .mega { font-size: 104px; margin-top: 12px; }
-      .poi { position: absolute; display: flex; align-items: center; gap: 14px; }
-      .poi .p { color: #fff; }
-      .poi .n { padding: 14px 24px; border-radius: 16px; background: #fff; color: var(--ink-dark); font-family: var(--font-display); font-weight: 800; font-size: 38px; white-space: nowrap; }
-      #poi-home .p { color: var(--sand); }
-      #poi-home .n { background: var(--sand); }
-      #hwy { position: absolute; left: 60px; right: 60px; top: 1500px; display: flex; gap: 18px; }
+      #loc .topfade { position: absolute; left: 0; right: 0; top: 0; height: 460px; background: linear-gradient(#18191c 55%, rgba(24,25,28,0)); z-index: 1; }
+      #loc .botfade { position: absolute; left: 0; right: 0; bottom: 0; height: 560px; background: linear-gradient(rgba(24,25,28,0), #18191c 45%); z-index: 1; }
+      .poi { position: absolute; left: 0; top: 0; z-index: 1; }
+      .poi .p { position: absolute; left: -20px; top: -52px; color: #fff; }
+      .poi .n { position: absolute; top: -50px; padding: 12px 22px; border-radius: 14px; background: #fff; color: var(--ink-dark); font-family: var(--font-display); font-weight: 800; font-size: 36px; white-space: nowrap; }
+      .poi .n.r { left: 34px; } .poi .n.l { right: 34px; }
+      #poi-home .p { color: var(--sand); left: -24px; top: -64px; }
+      #poi-home .n { background: var(--sand); top: 6px; left: -110px; }
+      .hlabel { position: absolute; left: 0; top: 0; z-index: 1; margin: -32px 0 0 -70px; width: 140px; text-align: center; padding: 10px 0; border-radius: 12px; background: var(--green); border: 4px solid #fff; font-family: var(--font-display); font-weight: 900; font-size: 34px; letter-spacing: .04em; opacity: 0; }
+      #hwy { position: absolute; left: 60px; right: 60px; top: 1560px; display: flex; gap: 18px; z-index: 2; }
       .hw { flex: 1; text-align: center; padding: 22px 0; border-radius: 16px; background: var(--green); border: 5px solid #fff; font-family: var(--font-display); font-weight: 900; font-size: 46px; letter-spacing: .04em; }
-      #hwy-label { position: absolute; left: 60px; top: 1420px; }
-      #loc-note { position: absolute; right: 60px; top: 1690px; font-size: 28px; opacity: .55; }
+      #hwy-label { position: absolute; left: 60px; top: 1480px; z-index: 2; }
+      #loc-note { position: absolute; right: 60px; top: 1760px; font-size: 28px; opacity: .55; z-index: 2; }
 
       /* promo */
       #promo { background: var(--sand); color: var(--ink-dark); }
@@ -283,25 +290,111 @@
         </div>
       </div>
 
-      <!-- 8 · LOCATION: nearby townships + highways (schematic) -->
+      <!-- 8 · LOCATION: real road geometry (OpenStreetMap), animated camera -->
       <div id="loc" class="clip" data-start="44.25" data-duration="11.25" data-track-index="1">
         <div class="mapgrid"></div>
-        <svg class="roads" data-layout-allow-overflow viewBox="0 0 1080 1920">
-          <path class="road" d="M-40 1180 C 260 1120, 420 980, 600 900 S 900 700, 1120 640" />
-          <path class="road" d="M180 1960 C 260 1500, 380 1200, 420 760 S 520 420, 560 300" />
-          <path class="road" d="M-40 820 C 300 860, 700 1040, 1120 1080" />
-          <path class="link" id="lk1" d="M330 1170 C 460 1080, 520 900, 590 790" />
-          <path class="link" id="lk2" d="M330 1170 C 520 1120, 700 1000, 820 960" />
-          <path class="link" id="lk3" d="M330 1170 C 460 1000, 560 720, 620 600" />
+        <svg class="map" data-layout-allow-overflow viewBox="0 0 1080 1920">
+          <g id="mworld">
+          <path class="mroad" d="M-701.2,574.3 L-701.3,575.2 L-701.1,576.6 L-700.0,586.0 L-699.3,592.9 L-698.8,596.2 L-698.0,602.0 L-697.6,605.0 L-696.4,614.9 L-695.4,623.5 L-695.3,624.9 L-693.8,636.7 L-693.6,639.4 L-693.5,642.0 L-693.4,644.3 L-693.6,645.7 L-693.8,646.7 L-694.0,647.7 L-694.7,649.3 L-695.8,651.9 L-697.6,654.7 L-699.3,657.5 L-700.1,659.0 L-707.5,671.4 L-713.4,681.4 L-715.7,685.4"/>
+          <path class="mroad" d="M-702.3,574.6 L-702.1,573.2 L-701.9,572.5 L-701.6,571.9 L-701.3,571.3 L-700.9,570.9 L-700.2,570.3 L-698.3,568.7 L-690.5,563.3 L-688.3,561.9 L-680.0,555.9 L-676.9,553.7 L-675.0,552.3 L-664.4,544.4"/>
+          <path class="mroad" d="M-778.5,-165.9 L-779.2,-166.7 L-781.4,-169.1 L-786.3,-175.5 L-792.3,-183.3 L-796.8,-189.2 L-799.3,-192.3 L-808.2,-203.1"/>
+          <path class="mroad" d="M-636.8,268.6 L-636.2,276.9 L-636.1,279.3 L-636.1,281.6 L-634.7,303.6 L-633.4,317.3 L-632.8,322.9 L-631.8,330.5 L-631.4,333.6 L-631.2,334.9 L-630.0,344.2 L-629.8,349.1 L-629.7,352.7 L-630.0,357.0 L-630.3,361.0 L-630.4,363.0 L-630.8,366.5 L-631.0,370.4 L-631.3,374.1"/>
+          <path class="mroad" d="M-656.5,131.5 L-652.9,150.5 L-651.9,156.1 L-651.5,157.9 L-647.7,178.5 L-646.4,187.8 L-645.3,194.5"/>
+          <path class="mroad" d="M-663.9,544.1 L-655.7,538.3 L-647.6,532.6 L-644.5,530.4 L-634.5,523.4"/>
+          <path class="mroad" d="M-668.2,91.3 L-669.4,87.6 L-674.8,70.5 L-680.2,55.2"/>
+          <path class="mroad" d="M-632.4,522.0 L-625.4,517.2 L-624.7,516.8 L-623.9,516.1 L-622.9,515.3 L-622.0,514.3 L-621.2,513.2 L-620.6,512.2 L-619.7,510.4 L-619.1,508.5 L-618.9,507.0 L-618.8,505.8 L-618.8,504.3 L-619.0,500.8 L-619.0,499.6 L-619.3,496.9 L-619.9,491.3"/>
+          <path class="mroad" d="M-632.2,404.8 L-631.8,407.7 L-631.3,411.3 L-629.3,423.5 L-628.8,426.6"/>
+          <path class="mroad" d="M-715.7,685.4 L-719.2,690.6 L-720.0,691.9 L-720.2,693.1"/>
+          <path class="mroad" d="M-637.2,279.5 L-637.5,275.1"/>
+          <path class="mroad" d="M-777.8,-165.1 L-778.5,-165.9"/>
+          <path class="mroad" d="M-406.3,-471.7 L-402.0,-464.1 L-400.8,-462.0 L-395.7,-453.4 L-393.1,-449.1 L-384.3,-434.1 L-377.7,-422.8 L-371.5,-412.2 L-370.2,-409.9 L-369.2,-408.1 L-367.6,-405.3 L-364.1,-399.3 L-357.3,-387.9 L-341.7,-361.1 L-330.2,-341.5 L-325.1,-333.0 L-323.7,-330.6 L-322.8,-329.0 L-320.4,-324.8 L-316.8,-318.7 L-315.6,-316.8 L-314.0,-314.3 L-313.5,-313.3 L-311.6,-310.1"/>
+          <path class="mroad" d="M-582.5,-799.4 L-581.2,-798.5 L-579.5,-797.0 L-578.4,-795.7 L-577.8,-795.1 L-577.2,-794.2 L-576.6,-793.0 L-575.8,-790.8 L-574.3,-784.5 L-573.9,-782.5 L-573.3,-780.2 L-572.8,-778.2 L-572.7,-777.8 L-572.2,-775.6 L-571.4,-772.2 L-571.3,-771.9 L-570.6,-768.8 L-569.6,-764.7 L-569.3,-763.0 L-567.5,-755.5 L-566.6,-752.2 L-565.5,-747.4 L-563.6,-740.2 L-562.7,-738.1 L-560.7,-734.4 L-558.0,-729.4 L-555.7,-725.3 L-554.6,-723.4 L-550.0,-715.3 L-547.9,-711.7 L-545.2,-706.8"/>
+          <path class="mroad" d="M-418.8,-492.4 L-416.3,-489.2 L-413.7,-485.3 L-412.4,-484.0"/>
+          <path class="mroad" d="M-410.8,-481.1 L-408.5,-476.3"/>
+          <path class="mroad" d="M-298.0,-285.4 L-301.9,-292.3 L-309.0,-304.8 L-311.6,-310.1"/>
+          <path class="mroad" d="M-535.8,-690.5 L-533.1,-686.0 L-532.8,-685.4 L-530.3,-681.3 L-526.1,-674.0 L-525.1,-672.3 L-520.9,-665.1 L-518.2,-660.5 L-516.5,-657.6 L-515.0,-655.0 L-511.3,-648.7 L-510.4,-647.2 L-508.7,-644.3 L-506.2,-640.1 L-503.6,-635.8 L-503.0,-634.7 L-502.1,-633.3 L-500.8,-631.1 L-496.5,-623.8 L-494.6,-620.5 L-491.0,-614.4 L-489.2,-611.4 L-487.9,-609.1 L-487.5,-608.5 L-486.3,-606.4 L-486.1,-606.1 L-485.8,-605.7 L-484.6,-603.7 L-484.3,-603.1 L-483.3,-601.5 L-482.9,-600.8 L-481.3,-598.0 L-480.8,-597.1 L-480.0,-595.9 L-479.1,-594.3 L-478.3,-592.9 L-477.8,-592.2 L-475.6,-588.3 L-475.5,-588.1 L-472.9,-583.8"/>
+          <path class="mhwy" d="M594.8,193.1 L587.5,193.8 L580.2,195.3 L573.2,196.9 L565.9,198.9 L546.5,208.7 L542.8,210.5 L540.5,211.2 L537.9,212.0 L533.0,213.0 L531.1,213.3 L529.3,213.5 L525.5,213.8 L520.9,213.8 L518.7,213.7 L516.8,213.5 L512.9,212.9 L510.2,212.4 L507.5,211.8 L504.4,210.9 L501.2,209.8 L488.8,204.7 L485.6,203.5 L482.4,202.3 L476.1,200.4 L468.3,198.3 L460.4,196.7 L455.5,195.9 L450.9,195.3 L446.1,194.9 L441.7,194.5 L435.8,194.4 L430.6,194.4 L424.9,194.6 L419.8,195.1 L414.6,195.7 L409.2,196.4 L405.3,197.1 L404.4,197.2 L404.1,197.2 L402.8,197.5 L400.5,197.9 L395.1,199.4 L389.7,200.9 L384.3,202.8 L380.0,204.3 L375.6,206.1 L371.0,208.0 L366.7,210.1 L362.1,212.3 L357.3,215.0 L352.9,217.4 L348.2,220.2 L343.8,223.0 L337.6,227.1 L331.6,231.5 L319.7,240.8 L193.0,338.0 L191.5,339.1 L189.5,340.7"/>
+          <path class="mhwy" d="M-81.8,522.6 L-66.8,520.7 L-59.9,519.5 L-51.4,518.0 L-37.0,514.6 L-21.5,510.0 L-10.6,506.3 L-0.0,502.2 L12.2,496.7 L21.7,492.4 L41.0,481.3 L63.7,466.5 L91.2,443.6 L106.7,428.2 L135.6,394.0 L171.0,354.8 L183.3,344.0"/>
+          <path class="mhwy" d="M184.3,345.3 L172.4,356.3 L164.9,363.8 L154.7,374.9 L137.2,395.3 L108.2,429.6 L92.6,445.2 L64.9,468.0 L42.1,483.1 L28.3,490.6"/>
+          <path class="mhwy" d="M11.7,498.9 L0.3,503.6 L-21.5,511.5 L-36.5,515.8 L-49.6,519.0 L-61.0,521.2 L-73.0,523.0 L-88.1,524.6 L-147.6,527.7 L-170.3,528.7 L-189.6,529.9 L-196.3,530.5 L-203.1,531.2 L-211.9,532.4 L-217.9,533.5 L-220.6,533.9 L-226.4,535.2 L-233.1,537.0"/>
+          <path class="mhwy" d="M-320.6,576.3 L-312.7,571.1 L-308.7,568.5 L-304.2,565.7 L-300.5,563.5 L-295.5,560.5 L-291.5,558.3 L-287.1,556.1 L-283.1,554.0 L-276.7,551.0 L-264.7,546.0 L-249.5,540.4 L-240.8,537.4"/>
+          <path class="mhwy" d="M-393.0,623.3 L-385.6,619.2 L-332.5,584.1"/>
+          <path class="mhwy" d="M-233.1,535.3 L-231.3,535.0 L-218.4,532.4 L-210.4,531.1 L-203.9,530.2 L-196.3,529.3 L-189.6,528.8 L-171.0,527.5"/>
+          <path class="mhwy" d="M570.1,196.3 L580.1,194.3 L587.4,192.8 L588.8,192.6 L594.8,192.1 L597.5,191.9 L599.9,191.9 L601.7,191.9 L634.1,191.7 L644.7,191.8"/>
+          <path class="mhwy" d="M1070.0,-124.0 L1078.7,-135.6 L1087.6,-146.1 L1094.5,-153.2 L1103.2,-161.0 L1115.1,-170.6 L1132.8,-182.1 L1146.5,-189.3 L1160.3,-195.1 L1174.4,-199.6 L1188.6,-202.9 L1206.2,-205.8 L1221.7,-206.9 L1238.3,-206.6 L1248.4,-205.9"/>
+          <path class="mhwy" d="M970.7,82.0 L970.1,42.4 L971.1,33.3 L973.2,25.7 L974.7,21.8 L976.5,18.1 L984.2,5.6 L995.5,-11.4 L1014.1,-39.3"/>
+          <path class="mhwy" d="M1067.0,-116.9 L1017.8,-42.7"/>
+          <path class="mhwy" d="M956.6,114.6 L953.6,117.5 L948.8,120.9 L941.2,124.9 L931.7,127.3 L920.4,127.5 L909.6,128.0 L902.8,129.4 L893.6,133.8 L887.9,138.3 L879.9,146.3 L870.7,155.2"/>
+          <path class="mhwy" d="M748.1,195.2 L721.3,194.5"/>
+          <path class="mhwy" d="M699.3,192.7 L720.5,193.1"/>
+          <path class="mhwy" d="M-899.4,767.4 L-894.9,764.7 L-886.1,759.9 L-879.7,756.6 L-873.5,753.7 L-861.9,749.8 L-856.1,748.5 L-849.5,747.5 L-842.1,746.8 L-834.2,746.6 L-826.0,747.2 L-805.6,749.7"/>
+          <path class="mhwy" d="M-935.5,775.3 L-920.2,773.9 L-917.5,773.5 L-913.3,772.5 L-908.0,771.0 L-905.1,770.0 L-902.2,768.8 L-899.4,767.4"/>
+          <path class="mhwy" d="M-327.9,-273.0 L-281.3,-286.0 L-249.8,-294.9 L-239.7,-297.7 L-220.8,-303.3 L-213.4,-305.4 L-207.1,-307.5 L-201.5,-309.6 L-195.2,-312.3 L-190.4,-314.6 L-185.9,-316.9 L-181.4,-319.2 L-176.9,-321.8 L-172.6,-324.6 L-168.6,-327.6 L-161.5,-333.0 L-156.8,-337.0 L-152.4,-341.0 L-148.0,-345.8 L-141.9,-352.4 L-130.8,-365.1 L-112.5,-386.5 L-102.7,-398.4 L-90.0,-413.9"/>
+          <path class="mhwy" d="M-78.9,-427.5 L-66.8,-440.4 L-44.5,-466.7 L-36.6,-475.5 L-33.3,-479.5 L-30.3,-483.2 L-21.7,-492.9 L-17.5,-497.9 L-14.0,-502.6 L3.8,-523.4 L22.3,-545.1 L29.1,-553.4 L36.8,-562.2 L42.4,-568.6"/>
+          <path class="mhwy" d="M131.6,-695.7 L123.0,-684.2 L119.4,-678.4 L115.8,-671.7 L108.6,-657.5 L103.8,-647.1 L98.8,-638.5 L94.7,-631.3 L89.0,-622.4 L85.0,-617.0 L79.9,-610.5 L72.3,-601.2"/>
+          <path class="mhwy" d="M273.6,-832.1 L255.0,-801.6 L246.3,-790.1 L232.9,-774.9"/>
+          <path class="mhwy" d="M272.4,-832.8 L303.3,-888.0"/>
+          <path class="mhwy" d="M100.5,-645.2 L104.1,-652.9 L114.4,-673.5 L120.2,-683.3 L124.5,-689.2 L130.2,-696.6"/>
+          <path class="mhwy" d="M232.9,-774.9 L226.7,-768.4 L219.0,-760.8"/>
+          <path class="mhwy" d="M32.1,-553.7 L26.3,-547.5 L20.8,-541.0"/>
+          <path class="mhwy" d="M42.4,-568.6 L44.4,-570.9 L45.9,-572.8"/>
+          <path class="mhwy" d="M-702.9,-271.8 L-670.7,-264.2 L-643.7,-257.6 L-615.7,-251.1 L-601.9,-248.8 L-593.6,-247.9 L-583.7,-247.4 L-555.9,-247.9 L-526.5,-248.8 L-481.8,-250.0 L-438.8,-251.2 L-431.2,-251.4 L-422.5,-251.7 L-413.1,-252.3 L-403.5,-253.4 L-395.1,-254.8 L-390.6,-255.7 L-382.7,-257.6 L-375.8,-259.4 L-368.5,-261.5 L-358.0,-264.4"/>
+          <path class="mhwy" d="M-262.0,-290.3 L-268.1,-288.6 L-280.5,-285.1 L-316.8,-274.8 L-339.2,-268.6"/>
+          <path class="mhwy" d="M-885.4,-265.4 L-830.9,-272.7 L-806.7,-275.6 L-793.5,-277.1 L-785.5,-278.0 L-776.0,-278.9"/>
+          <path class="mhwy" d="M-703.2,-270.6 L-728.0,-275.5"/>
+          <path class="mhwy" d="M-682.9,-265.8 L-703.2,-270.6"/>
+          <path class="mhwy" d="M-921.9,-263.0 L-917.1,-263.3 L-907.7,-263.6 L-896.0,-264.3 L-885.4,-265.4"/>
+          <path class="mhwy" d="M74.6,500.5 L77.0,503.0 L99.8,527.0 L118.6,547.4 L149.9,583.5 L153.7,587.7 L178.5,615.4 L193.4,631.6 L201.6,639.6 L210.0,647.3 L227.7,661.2 L266.6,689.7 L272.1,693.8 L276.5,697.4 L280.5,701.0 L291.4,711.3 L300.4,720.6 L309.5,731.2 L323.7,751.2 L333.3,767.3 L336.2,772.5 L340.8,782.6 L345.6,793.9 L354.5,821.5"/>
+          <path class="mhwy" d="M359.5,847.0 L361.1,860.6 L361.8,874.0 L362.0,881.7 L361.3,899.5 L360.0,910.8 L358.3,922.7 L354.4,941.6 L345.5,974.2 L340.0,994.9 L334.3,1014.4 L329.4,1029.8 L325.8,1043.7 L320.8,1063.7 L316.6,1080.7 L314.8,1086.9 L311.7,1097.6 L300.5,1140.4 L292.6,1169.7 L290.5,1181.6 L288.8,1190.9 L287.5,1199.9 L286.6,1213.9 L285.9,1224.1 L285.7,1231.7 L286.9,1260.5 L288.2,1276.1 L289.8,1291.4 L291.9,1306.2 L294.8,1321.1 L303.5,1364.9"/>
+          <path class="mhwy" d="M302.5,1365.1 L296.9,1338.0 L295.1,1328.8 L293.5,1319.6 L292.6,1315.0 L290.3,1301.2 L289.5,1296.5 L287.1,1277.4 L285.4,1257.5 L284.8,1247.4 L284.5,1242.2 L284.4,1231.9 L284.5,1226.7 L284.7,1221.5 L285.3,1211.0 L286.3,1200.5 L287.4,1190.0 L289.0,1179.6 L289.9,1174.6 L292.7,1163.6 L296.0,1150.6 L304.7,1118.9 L306.0,1113.5 L309.8,1099.7 L310.4,1097.2 L313.4,1086.5 L320.1,1061.6 L321.1,1057.3 L322.2,1050.9"/>
+          <path class="mhwy" d="M338.7,994.6 L344.1,973.8 L353.1,941.3 L357.0,922.4 L358.8,910.7 L359.8,899.5 L360.5,882.0 L360.3,874.5 L359.7,860.5 L358.1,847.4"/>
+          <path class="mhwy" d="M29.2,454.1 L74.6,500.5"/>
+          <path class="mhwy" d="M322.2,1050.9 L323.2,1044.8 L326.5,1029.2 L338.7,994.6"/>
+          <path class="mhwy" d="M358.1,847.4 L353.0,822.0"/>
+          <path class="mhwy" d="M-489.8,-762.9 L-474.5,-734.0 L-465.7,-718.2 L-460.1,-707.7 L-457.0,-701.0 L-455.5,-696.8"/>
+          <path class="mhwy" d="M-551.8,-896.9 L-517.5,-836.6"/>
+          <path class="mhwy" d="M-517.5,-836.6 L-511.0,-823.5 L-505.0,-806.4 L-500.9,-793.3"/>
+          <path class="mhwy" d="M-406.8,-188.1 L-394.3,-160.0 L-365.6,-95.5 L-349.5,-59.5 L-334.3,-25.7 L-324.2,-3.8 L-316.3,13.5"/>
+          <path class="mhwy" d="M-218.0,201.7 L-239.4,171.9 L-251.9,154.6 L-263.8,138.0 L-272.3,125.2 L-276.6,117.9"/>
+          <path class="mhwy" d="M-93.9,341.4 L-105.9,330.5 L-133.2,307.0 L-152.3,288.9"/>
+          <path class="mhwy" d="M-194.2,232.9 L-174.3,261.4 L-164.1,274.3 L-151.3,288.0"/>
+          <path class="mhwy" d="M-304.4,41.3 L-302.0,48.1 L-298.2,59.4 L-286.9,93.2 L-281.5,105.4 L-275.6,117.2"/>
+          <path class="mhwy" d="M-446.8,-274.6 L-455.3,-293.6 L-460.2,-304.9 L-467.5,-321.3 L-469.4,-325.8 L-471.8,-335.6 L-474.2,-345.9"/>
+          <path class="mhwy" d="M-466.8,-639.0 L-478.8,-623.4 L-483.6,-615.2 L-488.0,-604.9 L-489.4,-601.4 L-489.9,-597.3 L-489.9,-593.6 L-488.6,-587.8"/>
+          <path class="mhwy" d="M-465.9,-508.2 L-468.7,-518.4 L-479.0,-552.4 L-483.7,-568.0"/>
+          <path class="mhwy" d="M-468.8,-638.0 L-464.7,-643.6 L-461.4,-648.8 L-459.2,-653.2 L-457.4,-657.7 L-455.5,-663.8 L-454.5,-669.3 L-453.9,-674.7 L-453.7,-680.0 L-454.0,-684.5 L-454.8,-689.6 L-455.5,-692.9 L-456.6,-696.5"/>
+          <path class="mhwy" d="M-473.2,-415.1 L-465.4,-445.1 L-463.3,-460.6"/>
+          <path class="mhwy" d="M-483.7,-568.0 L-485.9,-575.1 L-489.8,-587.5"/>
+          <path class="mhwy" d="M54.8,-616.6 L52.5,-619.4 L49.5,-623.0 L43.9,-631.9 L41.1,-636.7 L38.8,-639.8 L31.9,-650.4 L30.0,-653.3 L27.9,-656.5 L26.4,-659.2 L25.2,-661.6 L24.2,-664.0 L21.9,-669.7 L20.5,-676.0 L18.6,-683.5"/>
+          <path class="mhwy" d="M-1.5,-725.4 L-4.5,-730.3 L-7.6,-734.1 L-10.3,-737.2 L-13.5,-739.7 L-17.1,-742.0 L-19.1,-743.0 L-22.3,-744.5 L-36.2,-750.4 L-40.2,-752.2 L-43.1,-753.9 L-45.8,-755.8 L-48.3,-758.0"/>
+          <path class="mhwy" d="M103.8,-554.3 L100.8,-558.2 L86.8,-576.8 L83.4,-581.3 L79.9,-585.9 L77.2,-589.3"/>
+          <path class="mhwy" d="M-53.3,-763.2 L-54.7,-765.8 L-56.0,-768.6 L-56.7,-770.7 L-57.4,-773.3 L-57.8,-775.1 L-58.1,-777.4 L-58.2,-779.8 L-58.2,-782.9 L-57.8,-786.6 L-55.8,-821.8 L-55.1,-833.0 L-54.1,-845.5 L-54.2,-851.3 L-54.3,-854.6 L-54.8,-858.5 L-56.2,-867.1 L-57.6,-875.9 L-59.0,-883.8 L-59.5,-889.9"/>
+          <path class="mhwy" d="M46.9,-633.6 L49.7,-631.8 L52.6,-630.1 L54.8,-628.8 L56.5,-627.8 L58.0,-626.6 L59.8,-624.9 L61.1,-623.1 L62.3,-621.1 L63.2,-619.1 L63.8,-616.6 L64.6,-612.3 L65.0,-611.0 L65.3,-609.6 L65.8,-607.5 L67.8,-603.4"/>
+          <path class="mhwy" d="M-53.6,-821.9 L-56.3,-782.8 L-56.1,-778.9 L-55.9,-776.0 L-55.3,-773.1 L-54.7,-771.1 L-53.8,-768.5 L-52.5,-765.7 L-51.0,-763.3 L-49.2,-761.1 L-47.3,-759.4"/>
+          <path class="mhwy" d="M-58.2,-890.0 L-57.6,-884.4 L-56.4,-876.5 L-55.2,-870.9 L-53.4,-861.2 L-52.9,-857.1 L-52.8,-856.1 L-52.6,-853.8 L-52.4,-851.1 L-52.4,-846.7 L-52.5,-843.7 L-53.6,-821.9"/>
+          <path class="mhwy" d="M110.5,-545.2 L103.8,-554.3"/>
+          <path class="mhwy" d="M-48.3,-758.0 L-50.6,-760.4 L-53.3,-763.2"/>
+          <g id="hl-skve" class="mhl"><path pathLength="1" d="M594.8,193.1 L587.5,193.8 L580.2,195.3 L573.2,196.9 L565.9,198.9 L546.5,208.7 L542.8,210.5 L540.5,211.2 L537.9,212.0 L533.0,213.0 L531.1,213.3 L529.3,213.5 L525.5,213.8 L520.9,213.8 L518.7,213.7 L516.8,213.5 L512.9,212.9 L510.2,212.4 L507.5,211.8 L504.4,210.9 L501.2,209.8 L488.8,204.7 L485.6,203.5 L482.4,202.3 L476.1,200.4 L468.3,198.3 L460.4,196.7 L455.5,195.9 L450.9,195.3 L446.1,194.9 L441.7,194.5 L435.8,194.4 L430.6,194.4 L424.9,194.6 L419.8,195.1 L414.6,195.7 L409.2,196.4 L405.3,197.1 L404.4,197.2 L404.1,197.2 L402.8,197.5 L400.5,197.9 L395.1,199.4 L389.7,200.9 L384.3,202.8 L380.0,204.3 L375.6,206.1 L371.0,208.0 L366.7,210.1 L362.1,212.3 L357.3,215.0 L352.9,217.4 L348.2,220.2 L343.8,223.0 L337.6,227.1 L331.6,231.5 L319.7,240.8 L193.0,338.0 L191.5,339.1 L189.5,340.7"/><path pathLength="1" d="M-81.8,522.6 L-66.8,520.7 L-59.9,519.5 L-51.4,518.0 L-37.0,514.6 L-21.5,510.0 L-10.6,506.3 L-0.0,502.2 L12.2,496.7 L21.7,492.4 L41.0,481.3 L63.7,466.5 L91.2,443.6 L106.7,428.2 L135.6,394.0 L171.0,354.8 L183.3,344.0"/><path pathLength="1" d="M184.3,345.3 L172.4,356.3 L164.9,363.8 L154.7,374.9 L137.2,395.3 L108.2,429.6 L92.6,445.2 L64.9,468.0 L42.1,483.1 L28.3,490.6"/><path pathLength="1" d="M11.7,498.9 L0.3,503.6 L-21.5,511.5 L-36.5,515.8 L-49.6,519.0 L-61.0,521.2 L-73.0,523.0 L-88.1,524.6 L-147.6,527.7 L-170.3,528.7 L-189.6,529.9 L-196.3,530.5 L-203.1,531.2 L-211.9,532.4 L-217.9,533.5 L-220.6,533.9 L-226.4,535.2 L-233.1,537.0"/><path pathLength="1" d="M-320.6,576.3 L-312.7,571.1 L-308.7,568.5 L-304.2,565.7 L-300.5,563.5 L-295.5,560.5 L-291.5,558.3 L-287.1,556.1 L-283.1,554.0 L-276.7,551.0 L-264.7,546.0 L-249.5,540.4 L-240.8,537.4"/><path pathLength="1" d="M-393.0,623.3 L-385.6,619.2 L-332.5,584.1"/><path pathLength="1" d="M-233.1,535.3 L-231.3,535.0 L-218.4,532.4 L-210.4,531.1 L-203.9,530.2 L-196.3,529.3 L-189.6,528.8 L-171.0,527.5"/><path pathLength="1" d="M570.1,196.3 L580.1,194.3 L587.4,192.8 L588.8,192.6 L594.8,192.1 L597.5,191.9 L599.9,191.9 L601.7,191.9 L634.1,191.7 L644.7,191.8"/><path pathLength="1" d="M1070.0,-124.0 L1078.7,-135.6 L1087.6,-146.1 L1094.5,-153.2 L1103.2,-161.0 L1115.1,-170.6 L1132.8,-182.1 L1146.5,-189.3 L1160.3,-195.1 L1174.4,-199.6 L1188.6,-202.9 L1206.2,-205.8 L1221.7,-206.9 L1238.3,-206.6 L1248.4,-205.9"/><path pathLength="1" d="M970.7,82.0 L970.1,42.4 L971.1,33.3 L973.2,25.7 L974.7,21.8 L976.5,18.1 L984.2,5.6 L995.5,-11.4 L1014.1,-39.3"/><path pathLength="1" d="M1067.0,-116.9 L1017.8,-42.7"/><path pathLength="1" d="M956.6,114.6 L953.6,117.5 L948.8,120.9 L941.2,124.9 L931.7,127.3 L920.4,127.5 L909.6,128.0 L902.8,129.4 L893.6,133.8 L887.9,138.3 L879.9,146.3 L870.7,155.2"/><path pathLength="1" d="M748.1,195.2 L721.3,194.5"/><path pathLength="1" d="M699.3,192.7 L720.5,193.1"/><path pathLength="1" d="M-899.4,767.4 L-894.9,764.7 L-886.1,759.9 L-879.7,756.6 L-873.5,753.7 L-861.9,749.8 L-856.1,748.5 L-849.5,747.5 L-842.1,746.8 L-834.2,746.6 L-826.0,747.2 L-805.6,749.7"/><path pathLength="1" d="M-935.5,775.3 L-920.2,773.9 L-917.5,773.5 L-913.3,772.5 L-908.0,771.0 L-905.1,770.0 L-902.2,768.8 L-899.4,767.4"/></g>
+          <g id="hl-kesas" class="mhl"><path pathLength="1" d="M-327.9,-273.0 L-281.3,-286.0 L-249.8,-294.9 L-239.7,-297.7 L-220.8,-303.3 L-213.4,-305.4 L-207.1,-307.5 L-201.5,-309.6 L-195.2,-312.3 L-190.4,-314.6 L-185.9,-316.9 L-181.4,-319.2 L-176.9,-321.8 L-172.6,-324.6 L-168.6,-327.6 L-161.5,-333.0 L-156.8,-337.0 L-152.4,-341.0 L-148.0,-345.8 L-141.9,-352.4 L-130.8,-365.1 L-112.5,-386.5 L-102.7,-398.4 L-90.0,-413.9"/><path pathLength="1" d="M-78.9,-427.5 L-66.8,-440.4 L-44.5,-466.7 L-36.6,-475.5 L-33.3,-479.5 L-30.3,-483.2 L-21.7,-492.9 L-17.5,-497.9 L-14.0,-502.6 L3.8,-523.4 L22.3,-545.1 L29.1,-553.4 L36.8,-562.2 L42.4,-568.6"/><path pathLength="1" d="M131.6,-695.7 L123.0,-684.2 L119.4,-678.4 L115.8,-671.7 L108.6,-657.5 L103.8,-647.1 L98.8,-638.5 L94.7,-631.3 L89.0,-622.4 L85.0,-617.0 L79.9,-610.5 L72.3,-601.2"/><path pathLength="1" d="M273.6,-832.1 L255.0,-801.6 L246.3,-790.1 L232.9,-774.9"/><path pathLength="1" d="M272.4,-832.8 L303.3,-888.0"/><path pathLength="1" d="M100.5,-645.2 L104.1,-652.9 L114.4,-673.5 L120.2,-683.3 L124.5,-689.2 L130.2,-696.6"/><path pathLength="1" d="M232.9,-774.9 L226.7,-768.4 L219.0,-760.8"/><path pathLength="1" d="M32.1,-553.7 L26.3,-547.5 L20.8,-541.0"/><path pathLength="1" d="M42.4,-568.6 L44.4,-570.9 L45.9,-572.8"/><path pathLength="1" d="M-702.9,-271.8 L-670.7,-264.2 L-643.7,-257.6 L-615.7,-251.1 L-601.9,-248.8 L-593.6,-247.9 L-583.7,-247.4 L-555.9,-247.9 L-526.5,-248.8 L-481.8,-250.0 L-438.8,-251.2 L-431.2,-251.4 L-422.5,-251.7 L-413.1,-252.3 L-403.5,-253.4 L-395.1,-254.8 L-390.6,-255.7 L-382.7,-257.6 L-375.8,-259.4 L-368.5,-261.5 L-358.0,-264.4"/><path pathLength="1" d="M-262.0,-290.3 L-268.1,-288.6 L-280.5,-285.1 L-316.8,-274.8 L-339.2,-268.6"/><path pathLength="1" d="M-885.4,-265.4 L-830.9,-272.7 L-806.7,-275.6 L-793.5,-277.1 L-785.5,-278.0 L-776.0,-278.9"/><path pathLength="1" d="M-703.2,-270.6 L-728.0,-275.5"/><path pathLength="1" d="M-682.9,-265.8 L-703.2,-270.6"/><path pathLength="1" d="M-921.9,-263.0 L-917.1,-263.3 L-907.7,-263.6 L-896.0,-264.3 L-885.4,-265.4"/></g>
+          <g id="hl-wce" class="mhl"><path pathLength="1" d="M74.6,500.5 L77.0,503.0 L99.8,527.0 L118.6,547.4 L149.9,583.5 L153.7,587.7 L178.5,615.4 L193.4,631.6 L201.6,639.6 L210.0,647.3 L227.7,661.2 L266.6,689.7 L272.1,693.8 L276.5,697.4 L280.5,701.0 L291.4,711.3 L300.4,720.6 L309.5,731.2 L323.7,751.2 L333.3,767.3 L336.2,772.5 L340.8,782.6 L345.6,793.9 L354.5,821.5"/><path pathLength="1" d="M359.5,847.0 L361.1,860.6 L361.8,874.0 L362.0,881.7 L361.3,899.5 L360.0,910.8 L358.3,922.7 L354.4,941.6 L345.5,974.2 L340.0,994.9 L334.3,1014.4 L329.4,1029.8 L325.8,1043.7 L320.8,1063.7 L316.6,1080.7 L314.8,1086.9 L311.7,1097.6 L300.5,1140.4 L292.6,1169.7 L290.5,1181.6 L288.8,1190.9 L287.5,1199.9 L286.6,1213.9 L285.9,1224.1 L285.7,1231.7 L286.9,1260.5 L288.2,1276.1 L289.8,1291.4 L291.9,1306.2 L294.8,1321.1 L303.5,1364.9"/><path pathLength="1" d="M302.5,1365.1 L296.9,1338.0 L295.1,1328.8 L293.5,1319.6 L292.6,1315.0 L290.3,1301.2 L289.5,1296.5 L287.1,1277.4 L285.4,1257.5 L284.8,1247.4 L284.5,1242.2 L284.4,1231.9 L284.5,1226.7 L284.7,1221.5 L285.3,1211.0 L286.3,1200.5 L287.4,1190.0 L289.0,1179.6 L289.9,1174.6 L292.7,1163.6 L296.0,1150.6 L304.7,1118.9 L306.0,1113.5 L309.8,1099.7 L310.4,1097.2 L313.4,1086.5 L320.1,1061.6 L321.1,1057.3 L322.2,1050.9"/><path pathLength="1" d="M338.7,994.6 L344.1,973.8 L353.1,941.3 L357.0,922.4 L358.8,910.7 L359.8,899.5 L360.5,882.0 L360.3,874.5 L359.7,860.5 L358.1,847.4"/><path pathLength="1" d="M29.2,454.1 L74.6,500.5"/><path pathLength="1" d="M322.2,1050.9 L323.2,1044.8 L326.5,1029.2 L338.7,994.6"/><path pathLength="1" d="M358.1,847.4 L353.0,822.0"/><path pathLength="1" d="M-489.8,-762.9 L-474.5,-734.0 L-465.7,-718.2 L-460.1,-707.7 L-457.0,-701.0 L-455.5,-696.8"/><path pathLength="1" d="M-551.8,-896.9 L-517.5,-836.6"/><path pathLength="1" d="M-517.5,-836.6 L-511.0,-823.5 L-505.0,-806.4 L-500.9,-793.3"/><path pathLength="1" d="M-406.8,-188.1 L-394.3,-160.0 L-365.6,-95.5 L-349.5,-59.5 L-334.3,-25.7 L-324.2,-3.8 L-316.3,13.5"/><path pathLength="1" d="M-218.0,201.7 L-239.4,171.9 L-251.9,154.6 L-263.8,138.0 L-272.3,125.2 L-276.6,117.9"/><path pathLength="1" d="M-93.9,341.4 L-105.9,330.5 L-133.2,307.0 L-152.3,288.9"/><path pathLength="1" d="M-194.2,232.9 L-174.3,261.4 L-164.1,274.3 L-151.3,288.0"/><path pathLength="1" d="M-304.4,41.3 L-302.0,48.1 L-298.2,59.4 L-286.9,93.2 L-281.5,105.4 L-275.6,117.2"/><path pathLength="1" d="M-446.8,-274.6 L-455.3,-293.6 L-460.2,-304.9 L-467.5,-321.3 L-469.4,-325.8 L-471.8,-335.6 L-474.2,-345.9"/><path pathLength="1" d="M-466.8,-639.0 L-478.8,-623.4 L-483.6,-615.2 L-488.0,-604.9 L-489.4,-601.4 L-489.9,-597.3 L-489.9,-593.6 L-488.6,-587.8"/><path pathLength="1" d="M-465.9,-508.2 L-468.7,-518.4 L-479.0,-552.4 L-483.7,-568.0"/><path pathLength="1" d="M-468.8,-638.0 L-464.7,-643.6 L-461.4,-648.8 L-459.2,-653.2 L-457.4,-657.7 L-455.5,-663.8 L-454.5,-669.3 L-453.9,-674.7 L-453.7,-680.0 L-454.0,-684.5 L-454.8,-689.6 L-455.5,-692.9 L-456.6,-696.5"/><path pathLength="1" d="M-473.2,-415.1 L-465.4,-445.1 L-463.3,-460.6"/><path pathLength="1" d="M-483.7,-568.0 L-485.9,-575.1 L-489.8,-587.5"/></g>
+          <g id="hl-lksa" class="mhl"><path pathLength="1" d="M54.8,-616.6 L52.5,-619.4 L49.5,-623.0 L43.9,-631.9 L41.1,-636.7 L38.8,-639.8 L31.9,-650.4 L30.0,-653.3 L27.9,-656.5 L26.4,-659.2 L25.2,-661.6 L24.2,-664.0 L21.9,-669.7 L20.5,-676.0 L18.6,-683.5"/><path pathLength="1" d="M-1.5,-725.4 L-4.5,-730.3 L-7.6,-734.1 L-10.3,-737.2 L-13.5,-739.7 L-17.1,-742.0 L-19.1,-743.0 L-22.3,-744.5 L-36.2,-750.4 L-40.2,-752.2 L-43.1,-753.9 L-45.8,-755.8 L-48.3,-758.0"/><path pathLength="1" d="M103.8,-554.3 L100.8,-558.2 L86.8,-576.8 L83.4,-581.3 L79.9,-585.9 L77.2,-589.3"/><path pathLength="1" d="M-53.3,-763.2 L-54.7,-765.8 L-56.0,-768.6 L-56.7,-770.7 L-57.4,-773.3 L-57.8,-775.1 L-58.1,-777.4 L-58.2,-779.8 L-58.2,-782.9 L-57.8,-786.6 L-55.8,-821.8 L-55.1,-833.0 L-54.1,-845.5 L-54.2,-851.3 L-54.3,-854.6 L-54.8,-858.5 L-56.2,-867.1 L-57.6,-875.9 L-59.0,-883.8 L-59.5,-889.9"/><path pathLength="1" d="M46.9,-633.6 L49.7,-631.8 L52.6,-630.1 L54.8,-628.8 L56.5,-627.8 L58.0,-626.6 L59.8,-624.9 L61.1,-623.1 L62.3,-621.1 L63.2,-619.1 L63.8,-616.6 L64.6,-612.3 L65.0,-611.0 L65.3,-609.6 L65.8,-607.5 L67.8,-603.4"/><path pathLength="1" d="M-53.6,-821.9 L-56.3,-782.8 L-56.1,-778.9 L-55.9,-776.0 L-55.3,-773.1 L-54.7,-771.1 L-53.8,-768.5 L-52.5,-765.7 L-51.0,-763.3 L-49.2,-761.1 L-47.3,-759.4"/><path pathLength="1" d="M-58.2,-890.0 L-57.6,-884.4 L-56.4,-876.5 L-55.2,-870.9 L-53.4,-861.2 L-52.9,-857.1 L-52.8,-856.1 L-52.6,-853.8 L-52.4,-851.1 L-52.4,-846.7 L-52.5,-843.7 L-53.6,-821.9"/><path pathLength="1" d="M110.5,-545.2 L103.8,-554.3"/><path pathLength="1" d="M-48.3,-758.0 L-50.6,-760.4 L-53.3,-763.2"/></g>
+          <path class="mpipit" d="M-254.5,235.8 L-252.8,241.7 L-251.3,247.2 L-250.6,249.6 L-248.8,255.8 L-248.7,256.4 L-248.1,258.8 L-247.5,261.0 L-247.1,262.3 L-246.2,265.8 L-245.1,269.6 L-243.1,276.5 L-242.1,280.1 L-241.5,282.0 L-240.4,285.7 L-238.8,291.6 L-238.0,294.2 L-237.2,297.0 L-236.2,300.2 L-235.3,303.0 L-232.1,314.8 L-231.6,317.3 L-231.3,318.1 L-231.1,319.5 L-230.0,324.8 L-229.7,325.8 L-226.3,338.2 L-225.0,342.9 L-224.6,344.2 L-223.0,350.2 L-221.4,355.9 L-219.6,361.8 L-218.8,364.4 L-217.2,370.0 L-214.0,382.2 L-212.4,387.9 L-211.6,391.1 L-207.9,404.5 L-207.7,405.4 L-206.1,410.7 L-204.4,416.9 L-203.0,422.3 L-201.5,427.7 L-199.9,433.9 L-199.6,435.4"/>
+          <path id="mlk1" class="mlink" pathLength="1" d="M-213.4,387.6 L24.0,167.7"/>
+          <path id="mlk2" class="mlink" pathLength="1" d="M-213.4,387.6 L52.7,213.1"/>
+          <path id="mlk3" class="mlink" pathLength="1" d="M-213.4,387.6 L111.8,305.3"/>
+          </g>
         </svg>
+        <div class="poi" id="poi-home"><div class="p"><svg viewBox="0 0 48 64" width="48" height="64"><path d="M24 2C12 2 3 11 3 23c0 16 21 39 21 39s21-23 21-39C45 11 36 2 24 2z" fill="currentColor"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg></div><div class="n">Tapak projek</div></div>
+        <div class="poi" id="poi-1"><div class="p"><svg viewBox="0 0 48 64" width="40" height="52"><path d="M24 2C12 2 3 11 3 23c0 16 21 39 21 39s21-23 21-39C45 11 36 2 24 2z" fill="currentColor"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg></div><div class="n l">Tropicana Aman</div></div>
+        <div class="poi" id="poi-2"><div class="p"><svg viewBox="0 0 48 64" width="40" height="52"><path d="M24 2C12 2 3 11 3 23c0 16 21 39 21 39s21-23 21-39C45 11 36 2 24 2z" fill="currentColor"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg></div><div class="n r">Eco Sanctuary</div></div>
+        <div class="poi" id="poi-3"><div class="p"><svg viewBox="0 0 48 64" width="40" height="52"><path d="M24 2C12 2 3 11 3 23c0 16 21 39 21 39s21-23 21-39C45 11 36 2 24 2z" fill="currentColor"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg></div><div class="n l">Bandar Rimbayu</div></div>
+        <div class="hlabel" id="hl-lb-skve">SKVE</div><div class="hlabel" id="hl-lb-kesas">KESAS</div>
+        <div class="hlabel" id="hl-lb-wce">WCE</div><div class="hlabel" id="hl-lb-lksa">LKSA</div>
+        <div class="topfade"></div><div class="botfade"></div>
         <div id="loc-head"><div class="kicker" style="color:var(--sand)">Lokasi</div><div class="mega">Dekat dengan</div></div>
-        <div class="poi" id="poi-home" style="left:280px;top:1100px"><div class="p"><svg viewBox="0 0 48 64" width="48" height="64"><path d="M24 2C12 2 3 11 3 23c0 16 21 39 21 39s21-23 21-39C45 11 36 2 24 2z" fill="currentColor"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg></div><div class="n">Tapak projek</div></div>
-        <div class="poi" id="poi-1" style="left:560px;top:700px"><div class="p"><svg viewBox="0 0 48 64" width="40" height="52"><path d="M24 2C12 2 3 11 3 23c0 16 21 39 21 39s21-23 21-39C45 11 36 2 24 2z" fill="currentColor"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg></div><div class="n">Tropicana Aman</div></div>
-        <div class="poi" id="poi-2" style="left:600px;top:900px"><div class="p"><svg viewBox="0 0 48 64" width="40" height="52"><path d="M24 2C12 2 3 11 3 23c0 16 21 39 21 39s21-23 21-39C45 11 36 2 24 2z" fill="currentColor"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg></div><div class="n">Eco Sanctuary</div></div>
-        <div class="poi" id="poi-3" style="left:470px;top:520px"><div class="p"><svg viewBox="0 0 48 64" width="40" height="52"><path d="M24 2C12 2 3 11 3 23c0 16 21 39 21 39s21-23 21-39C45 11 36 2 24 2z" fill="currentColor"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg></div><div class="n">Bandar Rimbayu</div></div>
         <div id="hwy-label" class="kicker" style="color:var(--sand)">Akses mudah</div>
         <div id="hwy"><div class="hw" id="hw1">SKVE</div><div class="hw" id="hw2">KESAS</div><div class="hw" id="hw3">WCE</div><div class="hw" id="hw4">LKSA</div></div>
-        <div id="loc-note">Ilustrasi, bukan ikut skala</div>
+        <div id="loc-note">Data peta &copy; OpenStreetMap</div>
       </div>
 
       <!-- 9 · PROMO -->
@@ -386,31 +479,33 @@
       <audio id="sfx-45-swoosh" src="assets/sfx/swoosh.wav" data-start="40.75" data-duration="0.38" data-volume="0.5" data-track-index="12"></audio>
       <audio id="sfx-46-sparkle" src="assets/sfx/sparkle.wav" data-start="43.2" data-duration="1.6" data-volume="0.5" data-track-index="11"></audio>
       <audio id="sfx-47-whoosh" src="assets/sfx/whoosh.wav" data-start="44.1" data-duration="0.7" data-volume="0.8" data-track-index="12"></audio>
-      <audio id="sfx-48-pop" src="assets/sfx/pop.wav" data-start="46.57" data-duration="0.16" data-volume="0.55" data-track-index="11"></audio>
-      <audio id="sfx-49-pop" src="assets/sfx/pop.wav" data-start="47.75" data-duration="0.16" data-volume="0.55" data-track-index="11"></audio>
-      <audio id="sfx-50-pop" src="assets/sfx/pop.wav" data-start="48.89" data-duration="0.16" data-volume="0.55" data-track-index="11"></audio>
-      <audio id="sfx-51-tick" src="assets/sfx/tick.wav" data-start="51.42" data-duration="0.06" data-volume="0.7" data-track-index="11"></audio>
-      <audio id="sfx-52-tick" src="assets/sfx/tick.wav" data-start="52.6" data-duration="0.06" data-volume="0.7" data-track-index="11"></audio>
-      <audio id="sfx-53-tick" src="assets/sfx/tick.wav" data-start="53.54" data-duration="0.06" data-volume="0.7" data-track-index="11"></audio>
-      <audio id="sfx-54-tick" src="assets/sfx/tick.wav" data-start="54.5" data-duration="0.06" data-volume="0.7" data-track-index="11"></audio>
-      <audio id="sfx-55-whoosh" src="assets/sfx/whoosh.wav" data-start="55.35" data-duration="0.7" data-volume="0.8" data-track-index="11"></audio>
-      <audio id="sfx-56-pop" src="assets/sfx/pop.wav" data-start="56.61" data-duration="0.16" data-volume="0.6" data-track-index="11"></audio>
-      <audio id="sfx-57-sparkle" src="assets/sfx/sparkle.wav" data-start="57.41" data-duration="1.6" data-volume="0.45" data-track-index="11"></audio>
-      <audio id="sfx-58-pop" src="assets/sfx/pop.wav" data-start="58.65" data-duration="0.16" data-volume="0.6" data-track-index="12"></audio>
-      <audio id="sfx-59-pop" src="assets/sfx/pop.wav" data-start="60.41" data-duration="0.16" data-volume="0.6" data-track-index="11"></audio>
-      <audio id="sfx-60-pop" src="assets/sfx/pop.wav" data-start="62.25" data-duration="0.16" data-volume="0.6" data-track-index="11"></audio>
-      <audio id="sfx-61-whoosh" src="assets/sfx/whoosh.wav" data-start="64.45" data-duration="0.7" data-volume="0.8" data-track-index="11"></audio>
-      <audio id="sfx-62-pop" src="assets/sfx/pop.wav" data-start="67.0" data-duration="0.16" data-volume="0.55" data-track-index="11"></audio>
-      <audio id="sfx-63-impact" src="assets/sfx/impact.wav" data-start="69.12" data-duration="1.4" data-volume="0.8" data-track-index="11"></audio>
-      <audio id="sfx-64-tick" src="assets/sfx/tick.wav" data-start="69.75" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
-      <audio id="sfx-65-tick" src="assets/sfx/tick.wav" data-start="69.82" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
-      <audio id="sfx-66-tick" src="assets/sfx/tick.wav" data-start="69.89" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
-      <audio id="sfx-67-tick" src="assets/sfx/tick.wav" data-start="69.96" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
-      <audio id="sfx-68-tick" src="assets/sfx/tick.wav" data-start="70.03" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
-      <audio id="sfx-69-tick" src="assets/sfx/tick.wav" data-start="70.1" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
-      <audio id="sfx-70-tick" src="assets/sfx/tick.wav" data-start="70.17" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
-      <audio id="sfx-71-tick" src="assets/sfx/tick.wav" data-start="70.24" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
-      <audio id="sfx-72-sparkle" src="assets/sfx/sparkle.wav" data-start="72.7" data-duration="1.6" data-volume="0.55" data-track-index="11"></audio>
+      <audio id="sfx-48-pop" src="assets/sfx/pop.wav" data-start="44.85" data-duration="0.16" data-volume="0.45" data-track-index="11"></audio>
+      <audio id="sfx-49-pop" src="assets/sfx/pop.wav" data-start="46.57" data-duration="0.16" data-volume="0.55" data-track-index="11"></audio>
+      <audio id="sfx-50-pop" src="assets/sfx/pop.wav" data-start="47.75" data-duration="0.16" data-volume="0.55" data-track-index="11"></audio>
+      <audio id="sfx-51-pop" src="assets/sfx/pop.wav" data-start="48.89" data-duration="0.16" data-volume="0.55" data-track-index="11"></audio>
+      <audio id="sfx-52-whoosh" src="assets/sfx/whoosh.wav" data-start="49.7" data-duration="0.7" data-volume="0.6" data-track-index="11"></audio>
+      <audio id="sfx-53-tick" src="assets/sfx/tick.wav" data-start="51.42" data-duration="0.06" data-volume="0.7" data-track-index="11"></audio>
+      <audio id="sfx-54-tick" src="assets/sfx/tick.wav" data-start="52.6" data-duration="0.06" data-volume="0.7" data-track-index="11"></audio>
+      <audio id="sfx-55-tick" src="assets/sfx/tick.wav" data-start="53.54" data-duration="0.06" data-volume="0.7" data-track-index="11"></audio>
+      <audio id="sfx-56-tick" src="assets/sfx/tick.wav" data-start="54.5" data-duration="0.06" data-volume="0.7" data-track-index="11"></audio>
+      <audio id="sfx-57-whoosh" src="assets/sfx/whoosh.wav" data-start="55.35" data-duration="0.7" data-volume="0.8" data-track-index="11"></audio>
+      <audio id="sfx-58-pop" src="assets/sfx/pop.wav" data-start="56.61" data-duration="0.16" data-volume="0.6" data-track-index="11"></audio>
+      <audio id="sfx-59-sparkle" src="assets/sfx/sparkle.wav" data-start="57.41" data-duration="1.6" data-volume="0.45" data-track-index="11"></audio>
+      <audio id="sfx-60-pop" src="assets/sfx/pop.wav" data-start="58.65" data-duration="0.16" data-volume="0.6" data-track-index="12"></audio>
+      <audio id="sfx-61-pop" src="assets/sfx/pop.wav" data-start="60.41" data-duration="0.16" data-volume="0.6" data-track-index="11"></audio>
+      <audio id="sfx-62-pop" src="assets/sfx/pop.wav" data-start="62.25" data-duration="0.16" data-volume="0.6" data-track-index="11"></audio>
+      <audio id="sfx-63-whoosh" src="assets/sfx/whoosh.wav" data-start="64.45" data-duration="0.7" data-volume="0.8" data-track-index="11"></audio>
+      <audio id="sfx-64-pop" src="assets/sfx/pop.wav" data-start="67.0" data-duration="0.16" data-volume="0.55" data-track-index="11"></audio>
+      <audio id="sfx-65-impact" src="assets/sfx/impact.wav" data-start="69.12" data-duration="1.4" data-volume="0.8" data-track-index="11"></audio>
+      <audio id="sfx-66-tick" src="assets/sfx/tick.wav" data-start="69.75" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
+      <audio id="sfx-67-tick" src="assets/sfx/tick.wav" data-start="69.82" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
+      <audio id="sfx-68-tick" src="assets/sfx/tick.wav" data-start="69.89" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
+      <audio id="sfx-69-tick" src="assets/sfx/tick.wav" data-start="69.96" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
+      <audio id="sfx-70-tick" src="assets/sfx/tick.wav" data-start="70.03" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
+      <audio id="sfx-71-tick" src="assets/sfx/tick.wav" data-start="70.1" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
+      <audio id="sfx-72-tick" src="assets/sfx/tick.wav" data-start="70.17" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
+      <audio id="sfx-73-tick" src="assets/sfx/tick.wav" data-start="70.24" data-duration="0.06" data-volume="0.5" data-track-index="12"></audio>
+      <audio id="sfx-74-sparkle" src="assets/sfx/sparkle.wav" data-start="72.7" data-duration="1.6" data-volume="0.55" data-track-index="11"></audio>
     </div>
 
     <script>
@@ -503,18 +598,42 @@
         .fromTo("#eta-dot, #eta-lbl", { opacity: 0, scale: .5 }, { opacity: 1, scale: 1, duration: .3, ease: "back.out(2)" }, v(42.95))
         .to("#eta-head em", { scale: 1.12, duration: .2, yoyo: true, repeat: 1, display: "inline-block", transformOrigin: "0 50%" }, v(42.99));
 
-      /* 8 · LOCATION */
-      tl.fromTo("#loc .roads .road", { opacity: 0 }, { opacity: 1, duration: .6, stagger: .1 }, v(44.0))
+      /* 8 · LOCATION: camera over real road geometry; pins/labels follow the camera */
+      const MAP = {"pois": {"site": [-213.4, 387.6], "tropicana": [24.0, 167.7], "eco": [52.7, 213.1], "rimbayu": [111.8, 305.3]}, "hwy": {"skve": [485.6, 203.5], "kesas": [-112.5, -386.5], "wce": [-349.5, -59.5], "lksa": [26.4, -659.2]}};
+      const MC = { s: 1.2, x: -20, y: 260 };           // camera: scale + world point at screen focus
+      const FX = 540, FY = 960;
+      const toScr = (wx, wy) => [FX + (wx - MC.x) * MC.s, FY + (wy - MC.y) * MC.s];
+      const place = (sel, w) => { const [x, y] = toScr(w[0], w[1]); const el = document.querySelector(sel); el.style.left = x + "px"; el.style.top = y + "px"; };
+      const applyCam = () => {
+        document.querySelector("#mworld").setAttribute("transform", `translate(${FX - MC.x * MC.s} ${FY - MC.y * MC.s}) scale(${MC.s})`);
+        place("#poi-home", MAP.pois.site); place("#poi-1", MAP.pois.tropicana); place("#poi-2", MAP.pois.eco); place("#poi-3", MAP.pois.rimbayu);
+        for (const k in MAP.hwy) place("#hl-lb-" + k, MAP.hwy[k]);
+      };
+      const TOWNS = { s: 1.7, x: -13, y: 278 };        // site + three townships
+      const WIDE = { s: .72, x: -110, y: -60 };          // site + SKVE/WCE/KESAS/LKSA
+      tl.set(MC, { ...TOWNS, s: 1.2, onUpdate: applyCam }, v(44.0))
+        .call(applyCam, null, v(44.0))
+        .to(MC, { ...TOWNS, duration: 1.4, ease: "power3.out", onUpdate: applyCam }, v(44.0))
+        .fromTo("#loc svg.map", { opacity: 0 }, { opacity: 1, duration: .5 }, v(44.0))
         .fromTo("#loc-head", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .4, ease: "power3.out" }, v(44.15));
       popIn("#poi-home", 44.6, { y: -60 });
-      [["#lk1", "#poi-1", 46.32], ["#lk2", "#poi-2", 47.5], ["#lk3", "#poi-3", 48.64]].forEach(([lk, p, t]) => {
-        tl.fromTo(lk, { opacity: 0, attr: { "stroke-dashoffset": 400 } }, { opacity: 1, attr: { "stroke-dashoffset": 0 }, duration: .5, ease: "power2.out" }, v(t - .15));
+      [["#mlk1", "#poi-1", 46.32], ["#mlk2", "#poi-2", 47.5], ["#mlk3", "#poi-3", 48.64]].forEach(([lk, p, t]) => {
+        tl.fromTo(lk, { opacity: 0 }, { opacity: 1, duration: .3 }, v(t - .15));
         popIn(p, t, { y: -50 });
       });
-      tl.fromTo("#hwy-label", { opacity: 0 }, { opacity: 1, duration: .3 }, v(49.83));
-      [["#hw1", 51.17], ["#hw2", 52.35], ["#hw3", 53.29], ["#hw4", 54.25]].forEach(([h, t]) => popIn(h, t, { y: 60 }));
+      // "Akses pun mudah..." -> pull back to show the highway network
+      tl.to(MC, { ...WIDE, duration: 1.3, ease: "power3.inOut", onUpdate: applyCam }, v(49.6))
+        .to("#poi-1 .n, #poi-2 .n, #poi-3 .n, .mlink", { opacity: 0, duration: .3 }, v(49.6))
+        .fromTo("#hwy-label", { opacity: 0 }, { opacity: 1, duration: .3 }, v(49.83));
+      [["skve", "#hw1", 51.17], ["kesas", "#hw2", 52.35], ["wce", "#hw3", 53.29], ["lksa", "#hw4", 54.25]].forEach(([k, h, t]) => {
+        tl.fromTo(`#hl-${k}`, { opacity: 0 }, { opacity: 1, duration: .25 }, v(t - .05))
+          .fromTo(`#hl-${k} path`, { attr: { "stroke-width": 30 } }, { attr: { "stroke-width": 13 }, duration: .5, ease: "power2.out" }, v(t - .05))
+          .fromTo(`#hl-lb-${k}`, { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .3, ease: "back.out(2)" }, v(t));
+        popIn(h, t, { y: 60 });
+      });
       tl.fromTo("#loc-note", { opacity: 0 }, { opacity: .55, duration: .3 }, v(46.0));
-      outUp("#loc-head, .poi, #hwy, #hwy-label, #loc-note", 55.0);
+      tl.to(MC, { s: .66, duration: 1.4, ease: "none", onUpdate: applyCam }, v(53.7));
+      outUp("#loc-head, .poi, .hlabel, #hwy, #hwy-label, #loc-note", 55.0);
 
       /* 9 · PROMO */
       tl.fromTo("#rays", { rotation: 0 }, { rotation: 40, duration: 9.1, ease: "none" }, v(55.25));
