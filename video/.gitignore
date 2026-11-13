@@ -2,3 +2,4 @@ node_modules/
 .hyperframes/
 *.log
 .transcode-cache/
+renders/
