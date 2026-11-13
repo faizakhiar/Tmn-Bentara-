@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<title>TikTok Cover</title>
+<style>
+  /* Matches the account's existing TikTok cover style: outlined caps lines, yellow script title,
+     black caption box with cyan/red offset. Text sits inside the centre 3:4 area the profile grid shows. */
+  @font-face { font-family: "Script"; src: url("../assets/fonts/kaushan-script-latin-400-normal.woff2"); }
+  @font-face { font-family: "Mont"; src: url("../assets/fonts/montserrat-latin-900-normal.woff2"); font-weight: 900; }
+  @font-face { font-family: "Rubik"; src: url("../assets/fonts/rubik-latin-800-normal.woff2"); font-weight: 800; }
+  @font-face { font-family: "Rubik"; src: url("../assets/fonts/rubik-latin-900-normal.woff2"); font-weight: 900; }
+  @font-face { font-family: "Mont"; src: url("../assets/fonts/montserrat-latin-800-normal.woff2"); font-weight: 800; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #8fa9c4; }
+  .bg { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; object-position: 50% 50%; transform: scale(1.08); transform-origin: 55% 52%; }
+  .shade { position: absolute; left: 0; right: 0; top: 0; height: 900px; background: linear-gradient(rgba(70,110,160,.35), rgba(70,110,160,0)); }
+  .top { position: absolute; left: 0; right: 0; top: 262px; text-align: center; color: #fff; font-family: "Mont"; font-weight: 900; text-transform: uppercase; }
+  .l1 { font-family: "Rubik"; font-weight: 800; font-size: 46px; letter-spacing: -.5px; -webkit-text-stroke: 9px #000; paint-order: stroke fill; }
+  .l2 { font-family: "Rubik"; font-weight: 800; font-size: 42px; letter-spacing: -.5px; margin-top: 4px; -webkit-text-stroke: 9px #000; paint-order: stroke fill; }
+  .title { margin-top: -6px; font-family: "Script"; font-size: 150px; line-height: 1.12; color: #ffd21f; text-transform: none; letter-spacing: 0;
+           -webkit-text-stroke: 16px #000; paint-order: stroke fill; text-shadow: 0 8px 0 #000, 0 12px 18px rgba(0,0,0,.35); }
+  .at { margin-top: -18px; font-family: "Rubik"; font-weight: 800; font-size: 27px; letter-spacing: .5px; -webkit-text-stroke: 6px #000; paint-order: stroke fill; }
+  .tag { position: absolute; padding: 10px 24px; border-radius: 14px; background: #fff; color: #000; font-family: "Mont"; font-weight: 900; font-size: 36px; border: 5px solid #000; }
+  .box { position: absolute; right: 56px; top: 908px; }
+  .box .cy, .box .rd { position: absolute; inset: 0; }
+  .box .cy { background: #25f4ee; transform: translate(-16px, -16px); }
+  .box .rd { background: #fe2c55; transform: translate(16px, 16px); }
+  .box .bk { position: relative; background: #000; color: #fff; font-family: "Mont"; font-weight: 800; font-size: 46px; line-height: 1.25; padding: 20px 36px 20px 32px; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <!-- top band: whole render; bottom band: whole real house (blurred fill behind) -->
+  <div style="position:absolute;left:0;top:0;width:1080px;height:960px;overflow:hidden">
+    <img src="../assets/img/render-corner.jpg" alt="" style="position:absolute;left:-100px;top:-200px;width:1280px;height:1254px;filter:blur(26px)" />
+    <img src="../assets/img/render-corner.jpg" alt="" style="position:absolute;left:0;top:61px;width:1080px;height:1058px;-webkit-mask-image:linear-gradient(transparent 0,#000 140px)" />
+  </div>
+  <div style="position:absolute;left:0;top:960px;width:1080px;height:960px;overflow:hidden">
+    <img src="../assets/img/real-corner.jpg" alt="" style="position:absolute;left:0;top:-470px;width:1080px;height:1920px" />
+  </div>
+  <div style="position:absolute;left:0;right:0;top:956px;height:10px;background:#fff;box-shadow:0 0 24px rgba(0,0,0,.45)"></div>
+  <div class="tag" style="left:40px;top:876px">RENDER 3D</div>
+  <div class="tag" style="left:40px;top:990px;background:#ffd21f">REALITI</div>
+  <div class="top">
+    <div class="l1">Render vs Realiti | Bawah 500K</div>
+    <div class="l2">Rumah berkembar 1-tingkat</div>
+    <div class="title" style="visibility:hidden">Taman Bentara</div>
+    <div class="at">@Jalan Pipit, Telok Panglima Garang</div>
+  </div>
+  <div class="box"><div class="cy"></div><div class="rd"></div><div class="bk">Sama Tak? 👀</div></div>
+</body>
+</html>
