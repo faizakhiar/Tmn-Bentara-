@@ -141,11 +141,9 @@ HWY = {  # id: (osm file, label, preferred label spot lon/lat)
 
 
 def map_svg():
-    parts = []
-    for k in ("ft5", "kebun"):
-        parts += [f'<path class="mroad" d="{d}"/>' for d in road_paths(k)]
-    for hid, (f, _, _, _) in HWY.items():
-        parts += [f'<path class="mhwy" d="{d}"/>' for d in road_paths(f)]
+    base = json.load(open("assets/map/base-layers.json"))
+    parts = [f'<image id="mbase-{k}" href="assets/map/base-{k}.jpg" x="{r["x"]}" y="{r["y"]}" width="{r["w"]}" height="{r["h"]}" preserveAspectRatio="none"/>'
+             for k, r in (("wide", base["wide"]), ("detail", base["detail"]))]
     for hid, (f, _, _, _) in HWY.items():
         parts.append(f'<g id="hl-{hid}" class="mhl">' + "".join(f'<path pathLength="1" d="{d}"/>' for d in road_paths(f)) + "</g>")
     parts += [f'<path class="mpipit" d="{d}"/>' for d in road_paths("pipit")]
@@ -204,21 +202,24 @@ HTML = r"""<!doctype html>
       .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(28,28,31,.06) 2px, transparent 2px), linear-gradient(90deg, rgba(28,28,31,.06) 2px, transparent 2px); background-size: 60px 60px; }
 
       /* hook */
-      #hook-bg { transform-origin: 50% 40%; }
-      #hook .renderwrap { position: absolute; left: 0; top: 0; height: 1920px; width: 1080px; overflow: hidden; }
-      #hook .renderwrap img { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; object-position: 22% 50%; transform-origin: 30% 45%; }
-      #hook .real { transform-origin: 62% 42%; }
-      #wipe { opacity: 0; position: absolute; top: 0; left: 0; width: 8px; height: 1920px; margin-left: -4px; background: #fff; box-shadow: 0 0 40px 8px rgba(255,255,255,.55); }
-      #hook-head { position: absolute; left: 64px; right: 64px; top: 210px; font-size: 118px; }
+      /* the whole render is shown uncropped in a full-width frame; blurred copies fill the rest of the portrait */
+      #hook .blur { position: absolute; inset: -60px; width: 1200px; height: 2040px; object-fit: cover; filter: blur(38px) brightness(.62) saturate(1.1); }
+      #hook-blur-real { opacity: 0; }
+      #hook-frame { position: absolute; left: 0; top: 430px; width: 1080px; height: 1058px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+      #hook-frame .real { position: absolute; left: 0; top: 0; width: 1080px; height: 1058px; object-fit: cover; object-position: 50% 40%; transform-origin: 58% 48%; }
+      #hook .renderwrap { position: absolute; left: 0; top: 0; height: 1058px; width: 1080px; overflow: hidden; }
+      #hook .renderwrap img { position: absolute; left: 0; top: 0; width: 1080px; height: 1058px; transform-origin: 50% 55%; }
+      #wipe { opacity: 0; position: absolute; top: 0; left: 0; width: 8px; height: 1058px; margin-left: -4px; background: #fff; box-shadow: 0 0 40px 8px rgba(255,255,255,.55); }
+      #hook-head { position: absolute; left: 64px; right: 64px; top: 190px; font-size: 112px; }
       #hook-head em { font-style: normal; color: var(--sand); }
-      #checks { position: absolute; left: 64px; top: 1080px; }
-      .chk { display: flex; align-items: center; gap: 22px; margin-bottom: 22px; padding: 18px 34px 18px 18px; border-radius: 22px; background: rgba(20,20,22,.84); font-family: var(--font-display); font-weight: 800; font-size: 50px; width: max-content; }
-      .chk i { width: 62px; height: 62px; border-radius: 16px; background: var(--sand); color: var(--ink-dark); display: flex; align-items: center; justify-content: center; font-style: normal; font-weight: 900; font-size: 40px; }
-      .chk.big { background: var(--sand); color: var(--ink-dark); font-size: 64px; font-weight: 900; }
+      #checks { position: absolute; left: 40px; right: 40px; top: 1516px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .chk { display: flex; align-items: center; gap: 16px; padding: 14px 20px 14px 14px; border-radius: 20px; background: rgba(20,20,22,.88); font-family: var(--font-display); font-weight: 800; font-size: 40px; white-space: nowrap; }
+      .chk i { flex: none; width: 54px; height: 54px; border-radius: 16px; background: var(--sand); color: var(--ink-dark); display: flex; align-items: center; justify-content: center; font-style: normal; font-weight: 900; font-size: 40px; }
+      .chk.big { background: var(--sand); color: var(--ink-dark); font-size: 42px; font-weight: 900; }
       .chk.big i { background: var(--ink-dark); color: var(--sand); }
-      #reveal-head { opacity: 0; position: absolute; left: 64px; right: 64px; top: 220px; font-size: 112px; }
+      #reveal-head { opacity: 0; position: absolute; left: 64px; right: 64px; top: 190px; font-size: 112px; }
       #reveal-head em { font-style: normal; color: var(--sand); }
-      #tag-render { left: 60px; top: 1500px; opacity: 0; } #tag-real { opacity: 0; } #tag-real { right: 60px; top: 1500px; }
+      #tag-render { left: 40px; top: 1530px; opacity: 0; } #tag-real { opacity: 0; } #tag-real { right: 40px; top: 1530px; }
 
       /* exterior */
       #ext-pin { position: absolute; left: 60px; top: 210px; display: flex; gap: 22px; align-items: flex-start; }
@@ -295,29 +296,29 @@ HTML = r"""<!doctype html>
       #eta-bar .lbl { position: absolute; top: 60px; font-family: var(--font-display); font-weight: 800; font-size: 36px; white-space: nowrap; }
 
       /* location */
-      #loc { background: #18191c; }
+      #loc { background: #f4f2ee; color: var(--ink-dark); }
       #loc .mapgrid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.04) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.04) 2px, transparent 2px); background-size: 72px 72px; }
       #loc svg.map { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
       #loc .mroad { fill: none; stroke: rgba(255,255,255,.16); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
       #loc .mhwy { fill: none; stroke: rgba(255,255,255,.3); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-      #loc .mhl { opacity: 0; } #loc .mhl path { fill: none; stroke: #3ecf7a; stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-      #loc .mpipit { fill: none; stroke: var(--sand); stroke-width: 9; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-      #loc .mlink { fill: none; stroke: var(--sand); stroke-width: 5; stroke-dasharray: .02 .02; vector-effect: non-scaling-stroke; opacity: 0; }
+      #loc .mhl { opacity: 0; } #loc .mhl path { fill: none; stroke: #1e8e3e; stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+      #loc .mpipit { fill: none; stroke: #d9822b; stroke-width: 10; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+      #loc .mlink { fill: none; stroke: #3c4043; stroke-width: 5; stroke-dasharray: .02 .02; vector-effect: non-scaling-stroke; opacity: 0; }
       #loc-head { position: absolute; left: 60px; top: 190px; z-index: 2; }
       #loc-head .mega { font-size: 104px; margin-top: 12px; }
-      #loc .topfade { position: absolute; left: 0; right: 0; top: 0; height: 460px; background: linear-gradient(#18191c 55%, rgba(24,25,28,0)); z-index: 1; }
-      #loc .botfade { position: absolute; left: 0; right: 0; bottom: 0; height: 560px; background: linear-gradient(rgba(24,25,28,0), #18191c 45%); z-index: 1; }
+      #loc .topfade { position: absolute; left: 0; right: 0; top: 0; height: 470px; background: linear-gradient(#f4f2ee 58%, rgba(244,242,238,0)); z-index: 1; }
+      #loc .botfade { position: absolute; left: 0; right: 0; bottom: 0; height: 560px; background: linear-gradient(rgba(244,242,238,0), #f4f2ee 48%); z-index: 1; }
       .poi { position: absolute; left: 0; top: 0; z-index: 1; }
-      .poi .p { position: absolute; left: -20px; top: -52px; color: #fff; }
-      .poi .n { position: absolute; top: -50px; padding: 12px 22px; border-radius: 14px; background: #fff; color: var(--ink-dark); font-family: var(--font-display); font-weight: 800; font-size: 36px; white-space: nowrap; }
+      .poi .p { position: absolute; left: -20px; top: -52px; color: #ea4335; filter: drop-shadow(0 3px 4px rgba(0,0,0,.3)); }
+      .poi .n { position: absolute; top: -50px; padding: 12px 22px; border-radius: 14px; background: #fff; color: var(--ink-dark); box-shadow: 0 6px 18px rgba(0,0,0,.18); font-family: var(--font-display); font-weight: 800; font-size: 36px; white-space: nowrap; }
       .poi .n.r { left: 34px; } .poi .n.l { right: 34px; }
-      #poi-home .p { color: var(--sand); left: -24px; top: -64px; }
-      #poi-home .n { background: var(--sand); top: 6px; left: -110px; }
+      #poi-home .p { color: #d9822b; left: -24px; top: -64px; }
+      #poi-home .n { background: var(--ink-dark); color: #fff; top: 6px; left: -110px; }
       .hlabel { position: absolute; left: 0; top: 0; z-index: 1; margin: -32px 0 0 -70px; width: 140px; text-align: center; padding: 10px 0; border-radius: 12px; background: var(--green); border: 4px solid #fff; font-family: var(--font-display); font-weight: 900; font-size: 34px; letter-spacing: .04em; opacity: 0; }
       #hwy { position: absolute; left: 60px; right: 60px; top: 1560px; display: flex; gap: 18px; z-index: 2; }
       .hw { flex: 1; text-align: center; padding: 22px 0; border-radius: 16px; background: var(--green); border: 5px solid #fff; font-family: var(--font-display); font-weight: 900; font-size: 46px; letter-spacing: .04em; }
       #hwy-label { position: absolute; left: 60px; top: 1480px; z-index: 2; }
-      #loc-note { position: absolute; right: 60px; top: 1760px; font-size: 28px; opacity: .55; z-index: 2; }
+      #loc-note { position: absolute; right: 60px; top: 1760px; font-size: 28px; opacity: .7; z-index: 2; color: var(--ink-dark); }
 
       /* promo */
       #promo { background: var(--sand); color: var(--ink-dark); }
@@ -359,11 +360,13 @@ HTML = r"""<!doctype html>
 
       <!-- 1 · HOOK: qualifying checklist over the render, then render -> realiti wipe -->
       <div id="hook" class="clip" __SC_hook__ data-track-index="1">
-        <img class="fill real" src="assets/img/real-corner.jpg" alt="" />
-        <div class="renderwrap"><img id="hook-bg" src="assets/img/render-corner.jpg" alt="" /></div>
-        <div id="wipe"></div>
-        <div class="scrim-top"></div>
-        <div class="scrim-bot" id="hook-scrim"></div>
+        <img class="blur" id="hook-blur-render" src="assets/img/render-corner.jpg" alt="" />
+        <img class="blur" id="hook-blur-real" src="assets/img/real-corner.jpg" alt="" />
+        <div id="hook-frame">
+          <img class="real" src="assets/img/real-corner.jpg" alt="" />
+          <div class="renderwrap"><img id="hook-bg" src="assets/img/render-corner.jpg" alt="" /></div>
+          <div id="wipe"></div>
+        </div>
         <div id="hook-head" class="mega shadow">Semi-D bawah <em>RM500K?</em></div>
         <div id="checks">
           <div class="chk" id="ck1"><i>&#10003;</i>Semi-D setingkat</div>
@@ -472,10 +475,10 @@ HTML = r"""<!doctype html>
         <div class="hlabel" id="hl-lb-skve">SKVE</div><div class="hlabel" id="hl-lb-kesas">KESAS</div>
         <div class="hlabel" id="hl-lb-wce">WCE</div><div class="hlabel" id="hl-lb-lksa">LKSA</div>
         <div class="topfade"></div><div class="botfade"></div>
-        <div id="loc-head"><div class="kicker" style="color:var(--sand)">Lokasi</div><div class="mega">Dekat dengan</div></div>
-        <div id="hwy-label" class="kicker" style="color:var(--sand)">Akses mudah</div>
+        <div id="loc-head"><div class="kicker" style="color:var(--sand-ink)">Lokasi</div><div class="mega">Dekat dengan</div></div>
+        <div id="hwy-label" class="kicker" style="color:var(--sand-ink)">Akses mudah</div>
         <div id="hwy"><div class="hw" id="hw1">SKVE</div><div class="hw" id="hw2">KESAS</div><div class="hw" id="hw3">WCE</div><div class="hw" id="hw4">LKSA</div></div>
-        <div id="loc-note">Data peta &copy; OpenStreetMap</div>
+        <div id="loc-note">Peta &copy; penyumbang OpenStreetMap</div>
       </div>
 
       <!-- 9 · PROMO -->
@@ -528,7 +531,7 @@ HTML = r"""<!doctype html>
       /* 1 · HOOK */
       // frame 0 is the thumbnail: headline already on screen, it just settles
       tl.set("#hook .renderwrap", { width: W }, 0).set("#wipe", { x: W }, 0)
-        .fromTo("#hook-bg", { scale: 1.0 }, { scale: 1.12, duration: v(8.1), ease: "none" }, 0)
+        .fromTo("#hook-bg", { scale: 1.0 }, { scale: 1.04, duration: v(8.1), ease: "none" }, 0)
         .fromTo("#hook-head", { scale: 1.08 }, { scale: 1, duration: .5, ease: "expo.out" }, 0);
       popIn("#ck1", 1.34, { x: -60, y: 0 }); popIn("#ck2", 3.08, { x: -60, y: 0 }); popIn("#ck3", 4.34, { x: -60, y: 0 });
       popIn("#ck4", 6.14, { scale: 1.4, y: 0 });
@@ -538,7 +541,8 @@ HTML = r"""<!doctype html>
       tl.to("#wipe", { opacity: 1, duration: .05 }, v(8.0))
         .to("#hook .renderwrap", { width: 0, duration: .55, ease: "power3.inOut" }, v(8.0))
         .to("#wipe", { x: 0, duration: .55, ease: "power3.inOut" }, v(8.0))
-        .fromTo("#hook .real", { scale: 1.18 }, { scale: 1.04, duration: 1.2, ease: "power2.out" }, v(8.5))
+        .fromTo("#hook-frame .real", { scale: 1.14 }, { scale: 1.0, duration: 1.2, ease: "power2.out" }, v(8.5))
+        .to("#hook-blur-real", { opacity: 1, duration: .5 }, v(8.1))
         .fromTo("#reveal-head", { scale: 1.3, opacity: 0 }, { scale: 1, opacity: 1, duration: .3, ease: "expo.out" }, v(8.5))
         .to("#hook .renderwrap", { width: W * .5, duration: .4, ease: "power3.out" }, v(8.56))
         .to("#wipe", { x: W * .5, duration: .4, ease: "power3.out" }, v(8.56))
@@ -631,6 +635,7 @@ HTML = r"""<!doctype html>
       // "Akses pun mudah..." -> pull back to show the highway network
       tl.to(MC, { ...WIDE, duration: 1.3, ease: "power3.inOut", onUpdate: applyCam }, v(49.6))
         .to("#poi-1 .n, #poi-2 .n, #poi-3 .n, .mlink", { opacity: 0, duration: .3 }, v(49.6))
+        .fromTo("#mbase-detail", { opacity: 1 }, { opacity: 0, duration: .9, ease: "power1.inOut" }, v(49.9))
         .fromTo("#hwy-label", { opacity: 0 }, { opacity: 1, duration: .3 }, v(49.83));
       [["skve", "#hw1", 51.17], ["kesas", "#hw2", 52.35], ["wce", "#hw3", 53.29], ["lksa", "#hw4", 54.25]].forEach(([k, h, t]) => {
         tl.fromTo(`#hl-${k}`, { opacity: 0 }, { opacity: 1, duration: .25 }, v(t - .05))
@@ -638,7 +643,7 @@ HTML = r"""<!doctype html>
           .fromTo(`#hl-lb-${k}`, { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .3, ease: "back.out(2)" }, v(t));
         popIn(h, t, { y: 60 });
       });
-      tl.fromTo("#loc-note", { opacity: 0 }, { opacity: .55, duration: .3 }, v(46.0));
+      tl.fromTo("#loc-note", { opacity: 0 }, { opacity: .7, duration: .3 }, v(46.0));
       tl.to(MC, { s: .66, duration: 1.4, ease: "none", onUpdate: applyCam }, v(53.7));
       outUp("#loc-head, .poi, .hlabel, #hwy, #hwy-label, #loc-note", 55.0);
 
