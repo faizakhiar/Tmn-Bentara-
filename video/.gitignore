@@ -3,3 +3,4 @@ node_modules/
 *.log
 .transcode-cache/
 renders/
+__pycache__/

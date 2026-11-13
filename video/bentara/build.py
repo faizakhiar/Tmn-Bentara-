@@ -1,18 +1,34 @@
 """Generates index.html for the Jalan Pipit semi-D voice-over cut.
 
-All cue times below are in *voice-over time* (seconds into assets/vo/voiceover-tight.wav,
-from the word-level transcript). VO_START shifts the whole VO into film time.
+All cue times below are in *original voice-over time* (seconds into assets/vo/voiceover-tight.wav,
+from the word-level transcript). The film plays the shortened VO (tools/vo_short.py: filler phrases
+cut, 1.12x tempo); M() maps an original VO time onto it via assets/vo/vo-map.json, and
+VO_START shifts the VO into film time.
 Run:  python3 build.py
 """
 
+import json as _json
+_VMAP = _json.load(open("assets/vo/vo-map.json"))
+BP = _VMAP["breakpoints"]
 VO_START = 0.25
-VO_LEN = 73.0
-END_HOLD = 4.0
+VO_LEN = _VMAP["new_duration"]
+OLD_VO_END = BP[-1][0]
+END_HOLD = 2.3
 FILM = round(VO_START + VO_LEN + END_HOLD, 2)
 
 
+def M(t):
+    """original VO time -> shortened VO time (cut spans collapse to their cut point)"""
+    if t >= BP[-1][0]:
+        return BP[-1][1] + (t - BP[-1][0])
+    for (a, na), (b, nb) in zip(BP, BP[1:]):
+        if a <= t <= b:
+            return na if b == a else na + (t - a) * (nb - na) / (b - a)
+    return 0.0
+
+
 def F(t):
-    return round(t + VO_START, 3)
+    return round(M(t) + VO_START, 3)
 
 
 # ---------------------------------------------------------------- scenes (VO time)
@@ -20,20 +36,20 @@ SC = {
     "hook":    (0.0, 9.8),    # Kalau anda tengah cari ... harga bawah RM500,000 / cuba tengok yang ini
     "ext":     (9.8, 15.55),  # Terletak di Jalan Pipit ... rumah berkembar 1 tingkat
     "price":   (15.55, 20.0),  # dengan harga bermula RM485,700 sahaja
-    "plan":    (20.0, 32.1),   # keluasan tanah 2,814 / binaan 1,266 / 4 bilik tidur + 2 bilik air
-    "int":     (32.1, 35.5),   # sesuai untuk keluarga
+    "plan":    (20.0, 32.14),  # keluasan tanah 2,814 / binaan 1,266 / 4 bilik tidur + 2 bilik air
     "status":  (35.5, 40.6),   # leasehold Rizab Melayu, 8 unit sahaja
     "eta":     (40.6, 44.0),   # dijangka siap Q4 2027
     "loc":     (44.0, 55.25),  # Tropicana Aman, Eco Sanctuary, Bandar Rimbayu / SKVE KESAS WCE LKSA
     "promo":   (55.25, 64.35), # booking RM1,000, free SPA legal fee, disbursements, MOT
-    "cta":     (64.35, VO_LEN + END_HOLD),  # DM saya / jangan tunggu 8 unit habis
+    "cta":     (64.35, None),  # semak kelayakan / DM saya / jangan tunggu 8 unit habis -> end
 }
 
 
 def scene_attrs(key):
     a, b = SC[key]
     start = 0 if key == "hook" else F(a)  # hook owns frame 0 (the social thumbnail)
-    return f'data-start="{start}" data-duration="{round(F(b) - start, 3)}"'
+    end = FILM if b is None else F(b)
+    return f'data-start="{start}" data-duration="{round(end - start, 3)}"'
 
 
 # ---------------------------------------------------------------- sound design (VO time)
@@ -52,7 +68,7 @@ SFX = [
     ("counter-short", 22.64, 0.5), ("swoosh", 25.45, 0.45), ("counter-short", 26.36, 0.5),
     # interior
     ("swoosh", 29.2, 0.45), *[("tick", round(29.75 + i * 0.09, 3), 0.6) for i in range(4)], ("pop", 29.8, 0.5),
-    ("tick", 31.11, 0.6), ("tick", 31.2, 0.6), ("pop", 31.15, 0.5), ("whoosh", 31.95, 0.8), ("pop", 32.3, 0.55),
+    ("tick", 31.11, 0.6), ("tick", 31.2, 0.6), ("pop", 31.15, 0.5), 
     # status
     ("whoosh", 35.35, 0.75), ("pop", 36.87, 0.55), ("pop", 37.43, 0.55),
     *[("tick", round(38.55 + i * 0.085, 3), 0.55) for i in range(8)],
@@ -78,8 +94,9 @@ def sfx_tags():
     out = []
     busy = {}  # track -> end time; give each cue the first free lane so nothing layers on one track
     for i, (name, t, vol) in enumerate(SFX):
-        trk = next(k for k in range(11, 40) if busy.get(k, -1) <= t)
-        busy[trk] = t + SFX_LEN[name]
+        ft = F(t)
+        trk = next(k for k in range(11, 40) if busy.get(k, -1) <= ft)
+        busy[trk] = ft + SFX_LEN[name]
         # whooshes/risers are placed so their peak lands on the cut, so start a bit earlier
         out.append(
             f'<audio id="sfx-{i:02d}-{name}" src="assets/sfx/{name}.wav" data-start="{F(t)}" '
@@ -428,15 +445,6 @@ HTML = r"""<!doctype html>
         <div class="stat" id="st-bath"><b>2</b><span>Bilik air</span></div>
       </div>
 
-      <!-- 5 · INTERIOR (slow-mo): rooms -->
-      <video id="v-int" class="clip fill" src="assets/footage/interior-slow.mp4" __SC_int__ data-media-start="0" muted playsinline data-track-index="0"></video>
-      <div id="int" class="clip" __SC_int__ data-track-index="1">
-        <div class="scrim-top"></div>
-        <div class="scrim-bot"></div>
-        <div id="int-head"><div class="kicker shadow">Dalam rumah</div><div class="mega shadow">Ruang selesa</div></div>
-        <div id="int-family" class="card"><div class="ico">&#9829;</div><div class="txt">Sesuai untuk keluarga</div></div>
-      </div>
-
       <!-- 6 · STATUS: tenure + units -->
       <div id="status" class="clip" __SC_status__ data-track-index="1">
         <div class="grid"></div>
@@ -447,9 +455,9 @@ HTML = r"""<!doctype html>
         <div id="units-label">8 unit sahaja</div>
       </div>
 
-      <!-- 7 · ETA: real site today -> Q4 2027 -->
+      <!-- 7 · ETA: real interior footage today -> Q4 2027 -->
+      <video id="v-int" class="clip fill" src="assets/footage/interior-slow.mp4" __SC_eta__ data-media-start="0" muted playsinline data-track-index="0"></video>
       <div id="eta" class="clip" __SC_eta__ data-track-index="1">
-        <img class="fill" id="eta-bg" src="assets/img/real-corner.jpg" alt="" />
         <div class="scrim-top"></div>
         <div class="scrim-bot"></div>
         <div id="eta-head"><div class="kicker shadow">Dijangka siap</div><div class="mega shadow">Suku ke-4 <em>2027</em></div></div>
@@ -497,8 +505,7 @@ HTML = r"""<!doctype html>
         <div id="cta-pan"><img src="assets/img/render-front.jpg" alt="" /></div>
         <div class="dim"></div>
         <div id="cta-head"><div class="mega shadow">Berminat?</div></div>
-        <div id="cta-q" class="card"><div class="ico">?</div><div class="txt">Nak tahu lebih lanjut</div></div>
-        <div id="cta-loan" class="card" style="top:780px"><div class="ico">&#10003;</div><div class="txt">Semak kelayakan pinjaman</div></div>
+        <div id="cta-loan" class="card" style="top:520px"><div class="ico">&#10003;</div><div class="txt">Semak kelayakan pinjaman</div></div>
         <div id="cta-btn">DM saya sekarang</div>
         <div id="cta-units">__CUNITS__</div>
         <div id="cta-scar" class="shadow">Jangan tunggu 8 unit ni habis!</div>
@@ -513,15 +520,19 @@ HTML = r"""<!doctype html>
       </div>
 
       <!-- AUDIO -->
-      <audio id="a-vo" src="assets/vo/voiceover-tight.wav" data-start="__VO_START__" data-duration="__VO_LEN__" data-media-start="0" data-volume="1" data-track-index="9"></audio>
-      <audio id="a-music" src="assets/sfx/music-long.wav" data-start="0" data-duration="76" data-media-start="0" data-volume="0.16" data-fade-in="0.4" data-fade-out="2.5" data-track-index="10"></audio>
+      <audio id="a-vo" src="assets/vo/voiceover-short.wav" data-start="__VO_START__" data-duration="__VO_LEN__" data-media-start="0" data-volume="1" data-track-index="9"></audio>
+      <audio id="a-music" src="assets/sfx/music-long.wav" data-start="0" data-duration="__FILM__" data-media-start="0" data-volume="0.16" data-fade-in="0.4" data-fade-out="2" data-track-index="10"></audio>
       __SFX__
     </div>
 
     <script>
       window.__timelines = window.__timelines || {};
       const VO = __VO_START__;
-      const v = (t) => +(t + VO).toFixed(3);   // VO time -> film time
+      const BP = __BP__;                       // original VO time -> shortened VO time
+      const M = (t) => { if (t >= BP[BP.length - 1][0]) return BP[BP.length - 1][1] + (t - BP[BP.length - 1][0]);
+        for (let i = 0; i < BP.length - 1; i++) { const [a, na] = BP[i], [b, nb] = BP[i + 1];
+          if (t >= a && t <= b) return b === a ? na : na + (t - a) * (nb - na) / (b - a); } return 0; };
+      const v = (t) => +(M(t) + VO).toFixed(3);   // original VO time -> film time
       const tl = gsap.timeline({ paused: true });
       const W = 1080;
       const popIn = (sel, t, from = {}) => tl.fromTo(sel, { y: 50, opacity: 0, scale: .9, ...from }, { y: 0, x: 0, opacity: 1, scale: 1, duration: .38, ease: "back.out(1.9)" }, v(t));
@@ -589,10 +600,7 @@ HTML = r"""<!doctype html>
       outUp("#plan-head2, #plan-card, #st-bed, #st-bath", 31.9);
 
       /* 5 · INTERIOR */
-      tl.fromTo("#v-int", { scale: 1.15 }, { scale: 1.02, duration: .5, ease: "power3.out" }, v(32.1));
-      popIn("#int-head", 32.2, { x: -60, y: 0 });
-      popIn("#int-family", 32.5, { x: -80, y: 0 });
-      outUp("#int-head, #int-family", 35.25);
+
 
       /* 6 · STATUS */
       tl.fromTo("#status-head", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .4, ease: "power3.out" }, v(35.6));
@@ -603,7 +611,7 @@ HTML = r"""<!doctype html>
       outUp("#status-head, .tcard, #units, #units-label", 40.4);
 
       /* 7 · ETA */
-      tl.fromTo("#eta-bg", { scale: 1.22 }, { scale: 1.05, duration: 3.4, ease: "power1.out" }, v(40.6));
+      tl.fromTo("#v-int", { scale: 1.15 }, { scale: 1.02, duration: .6, ease: "power3.out" }, v(40.6));
       popIn("#eta-head", 40.75, { x: -60, y: 0 });
       tl.fromTo("#eta-fill", { scaleX: 0 }, { scaleX: 1, duration: 1.8, ease: "power2.inOut" }, v(41.3))
         .fromTo("#eta-dot, #eta-lbl", { opacity: 0, scale: .5 }, { opacity: 1, scale: 1, duration: .3, ease: "back.out(2)" }, v(42.95))
@@ -657,15 +665,15 @@ HTML = r"""<!doctype html>
       outUp("#promo-head, #ticket, .free, #promo-note", 64.1);
 
       /* 10 · CTA */
-      tl.fromTo("#cta-pan", { x: -2333, scale: 1.08 }, { x: -600, scale: 1.0, duration: v(VO_LEN_JS) - v(64.35) + 2.6, ease: "power1.out" }, v(64.35));
+      tl.fromTo("#cta-pan", { x: -2333, scale: 1.08 }, { x: -600, scale: 1.0, duration: __FILM__ - v(64.35), ease: "power1.out" }, v(64.35));
       popIn("#cta-head", 64.6, { scale: 1.3, y: 0 });
-      popIn("#cta-q", 65.3, { x: -80, y: 0 }); popIn("#cta-loan", 66.75, { x: -80, y: 0 });
+      popIn("#cta-loan", 66.75, { x: -80, y: 0 });
       popIn("#cta-btn", 68.75, { scale: 1.4, y: 0 });
       tl.to("#cta-btn", { scale: 1.05, duration: .3, yoyo: true, repeat: 3, ease: "sine.inOut" }, v(69.3));
       tl.fromTo(".cunit", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: .25, stagger: .07, ease: "back.out(2.4)" }, v(69.5));
       tl.fromTo("#cta-scar", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .3 }, v(70.0));
       tl.to(".cunit", { opacity: .25, duration: .15, stagger: .06 }, v(71.5));
-      outUp("#cta-head, #cta-q, #cta-loan, #cta-btn, #cta-units, #cta-scar", 72.1);
+      outUp("#cta-head, #cta-loan, #cta-btn, #cta-units, #cta-scar", 72.1);
       tl.fromTo("#endcard", { opacity: 0 }, { opacity: 1, duration: .4 }, v(72.35))
         .fromTo("#endcard .logo", { y: 60, opacity: 0, scale: .92 }, { y: 0, opacity: 1, scale: 1, duration: .45, ease: "expo.out" }, v(72.5))
         .fromTo("#endcard .bar", { scaleX: 0 }, { scaleX: 1, duration: .4, ease: "power3.out" }, v(72.7))
@@ -683,7 +691,7 @@ html = HTML
 for k in SC:
     html = html.replace(f"__SC_{k}__", scene_attrs(k))
 html = (html.replace("__FILM__", str(FILM)).replace("__VO_START__", str(VO_START)).replace("__VO_LEN__", str(VO_LEN))
-        .replace("VO_LEN_JS", str(VO_LEN)).replace("__SFX__", sfx_tags())
+        .replace("__BP__", _json.dumps(BP)).replace("__SFX__", sfx_tags())
         .replace("__UNITS__", houses("unit", 8, 96)).replace("__CUNITS__", houses("cunit", 8, 70))
         .replace("__PIN90__", PIN.format(w=68, h=90)).replace("__PIN64__", PIN.format(w=48, h=64))
         .replace("__PIN52__", PIN.format(w=40, h=52))
