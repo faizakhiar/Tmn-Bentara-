@@ -19,26 +19,33 @@
   .title { margin-top: -6px; font-family: "Script"; font-size: 168px; line-height: 1.12; color: #ffd21f; text-transform: none; letter-spacing: 0;
            -webkit-text-stroke: 16px #000; paint-order: stroke fill; text-shadow: 0 8px 0 #000, 0 12px 18px rgba(0,0,0,.35); }
   .at { margin-top: -18px; font-size: 26px; letter-spacing: .5px; -webkit-text-stroke: 6px #000; paint-order: stroke fill; }
-  .tag { position: absolute; top: 1150px; padding: 12px 26px; border-radius: 14px; background: #fff; color: #000; font-family: "Mont"; font-weight: 900; font-size: 38px; border: 5px solid #000; }
-  .box { position: absolute; left: 172px; top: 1318px; }
+  .tag { position: absolute; padding: 10px 24px; border-radius: 14px; background: #fff; color: #000; font-family: "Mont"; font-weight: 900; font-size: 36px; border: 5px solid #000; }
+  .box { position: absolute; right: 56px; top: 948px; }
   .box .cy, .box .rd { position: absolute; inset: 0; }
   .box .cy { background: #25f4ee; transform: translate(-16px, -16px); }
   .box .rd { background: #fe2c55; transform: translate(16px, 16px); }
-  .box .bk { position: relative; background: #000; color: #fff; font-family: "Mont"; font-weight: 800; font-size: 60px; line-height: 1.32; padding: 34px 54px 34px 44px; white-space: nowrap; }
+  .box .bk { position: relative; background: #000; color: #fff; font-family: "Mont"; font-weight: 800; font-size: 46px; line-height: 1.25; padding: 20px 36px 20px 32px; white-space: nowrap; }
 </style>
 </head>
 <body>
-  <img class="bg" src="../assets/img/real-corner.jpg" alt="" style="transform:scale(1.25);transform-origin:62% 52%" />
-  <div style="position:absolute;left:0;top:0;width:540px;height:1920px;overflow:hidden"><img src="../assets/img/render-corner.jpg" style="position:absolute;left:-60px;top:330px;height:1420px;width:auto" alt="" /><div style="position:absolute;left:0;right:0;top:0;height:340px;background:linear-gradient(#5f8fd0,#7aa6dc)"></div><div style="position:absolute;left:0;right:0;top:1740px;bottom:0;background:#3d6b2a"></div></div>
-  <div style="position:absolute;left:536px;top:0;width:8px;height:1920px;background:#fff;box-shadow:0 0 30px rgba(0,0,0,.4)"></div>
-  <div class="tag" style="left:60px">RENDER 3D</div><div class="tag" style="right:60px;background:#ffd21f">REALITI</div>
-  <div class="shade"></div>
+  <!-- top band: whole render; bottom band: whole real house (blurred fill behind) -->
+  <img class="bg" src="../assets/img/real-corner.jpg" alt="" style="filter:blur(30px) brightness(.8);transform:scale(1.2)" />
+  <div style="position:absolute;left:0;top:0;width:1080px;height:1000px;overflow:hidden">
+    <img src="../assets/img/render-corner.jpg" alt="" style="position:absolute;left:-100px;top:-200px;width:1280px;height:1254px;filter:blur(26px)" />
+    <img src="../assets/img/render-corner.jpg" alt="" style="position:absolute;left:0;top:101px;width:1080px;height:1058px;-webkit-mask-image:linear-gradient(transparent 0,#000 140px)" />
+  </div>
+  <div style="position:absolute;left:0;top:1000px;width:1080px;height:920px;overflow:hidden">
+    <img src="../assets/img/real-corner.jpg" alt="" style="position:absolute;left:43px;top:-440px;width:994px;height:1767px" />
+  </div>
+  <div style="position:absolute;left:0;right:0;top:996px;height:10px;background:#fff;box-shadow:0 0 24px rgba(0,0,0,.45)"></div>
+  <div class="tag" style="left:40px;top:916px">RENDER 3D</div>
+  <div class="tag" style="left:40px;top:1030px;background:#ffd21f">REALITI</div>
   <div class="top">
     <div class="l1">Render vs Realiti | Bawah 500K</div>
     <div class="l2">Rumah berkembar 1-tingkat</div>
     <div class="title">Jalan Pipit</div>
     <div class="at">@Telok Panglima Garang</div>
   </div>
-  <div class="box"><div class="cy"></div><div class="rd"></div><div class="bk">Sama Tak?<br />@ TPG</div></div>
+  <div class="box"><div class="cy"></div><div class="rd"></div><div class="bk">Sama Tak? 👀</div></div>
 </body>
 </html>
