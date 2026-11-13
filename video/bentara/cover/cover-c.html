@@ -8,17 +8,19 @@
      black caption box with cyan/red offset. Text sits inside the centre 3:4 area the profile grid shows. */
   @font-face { font-family: "Script"; src: url("../assets/fonts/kaushan-script-latin-400-normal.woff2"); }
   @font-face { font-family: "Mont"; src: url("../assets/fonts/montserrat-latin-900-normal.woff2"); font-weight: 900; }
+  @font-face { font-family: "Rubik"; src: url("../assets/fonts/rubik-latin-800-normal.woff2"); font-weight: 800; }
+  @font-face { font-family: "Rubik"; src: url("../assets/fonts/rubik-latin-900-normal.woff2"); font-weight: 900; }
   @font-face { font-family: "Mont"; src: url("../assets/fonts/montserrat-latin-800-normal.woff2"); font-weight: 800; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 1080px; height: 1920px; overflow: hidden; background: #8fa9c4; }
   .bg { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; object-position: 50% 50%; transform: scale(1.08); transform-origin: 55% 52%; }
   .shade { position: absolute; left: 0; right: 0; top: 0; height: 900px; background: linear-gradient(rgba(70,110,160,.35), rgba(70,110,160,0)); }
   .top { position: absolute; left: 0; right: 0; top: 262px; text-align: center; color: #fff; font-family: "Mont"; font-weight: 900; text-transform: uppercase; }
-  .l1 { font-size: 44px; letter-spacing: -.5px; -webkit-text-stroke: 9px #000; paint-order: stroke fill; }
-  .l2 { font-size: 40px; letter-spacing: -.5px; margin-top: 4px; -webkit-text-stroke: 9px #000; paint-order: stroke fill; }
+  .l1 { font-family: "Rubik"; font-weight: 800; font-size: 46px; letter-spacing: -.5px; -webkit-text-stroke: 9px #000; paint-order: stroke fill; }
+  .l2 { font-family: "Rubik"; font-weight: 800; font-size: 42px; letter-spacing: -.5px; margin-top: 4px; -webkit-text-stroke: 9px #000; paint-order: stroke fill; }
   .title { margin-top: -6px; font-family: "Script"; font-size: 168px; line-height: 1.12; color: #ffd21f; text-transform: none; letter-spacing: 0;
            -webkit-text-stroke: 16px #000; paint-order: stroke fill; text-shadow: 0 8px 0 #000, 0 12px 18px rgba(0,0,0,.35); }
-  .at { margin-top: -18px; font-size: 26px; letter-spacing: .5px; -webkit-text-stroke: 6px #000; paint-order: stroke fill; }
+  .at { margin-top: -18px; font-family: "Rubik"; font-weight: 800; font-size: 27px; letter-spacing: .5px; -webkit-text-stroke: 6px #000; paint-order: stroke fill; }
   .box { position: absolute; left: 172px; top: 1318px; }
   .box .cy, .box .rd { position: absolute; inset: 0; }
   .box .cy { background: #25f4ee; transform: translate(-16px, -16px); }
