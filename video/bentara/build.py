@@ -70,7 +70,7 @@ SFX = [
     ("swoosh", 29.2, 0.45), *[("tick", round(29.75 + i * 0.09, 3), 0.6) for i in range(4)], ("pop", 29.8, 0.5),
     ("tick", 31.11, 0.6), ("tick", 31.2, 0.6), ("pop", 31.15, 0.5), 
     # status
-    ("whoosh", 35.35, 0.75), ("pop", 36.87, 0.55), ("pop", 37.43, 0.55),
+    ("whoosh", 35.35, 0.75), ("pop", 36.87, 0.55),
     *[("tick", round(38.55 + i * 0.085, 3), 0.55) for i in range(8)],
     ("impact", 39.23, 0.7),
     # eta
@@ -297,10 +297,10 @@ HTML = r"""<!doctype html>
       .tcard { position: absolute; left: 60px; right: 60px; padding: 34px 40px; border-radius: 30px; background: var(--charcoal); color: #fff; }
       .tcard .k { font-family: var(--font-display); font-weight: 800; font-size: 30px; letter-spacing: .12em; text-transform: uppercase; color: var(--sand); }
       .tcard .v { margin-top: 10px; font-family: var(--font-display); font-weight: 900; font-size: 72px; letter-spacing: -.02em; }
-      #tc-lease { top: 520px; } #tc-rizab { top: 740px; }
-      #units { position: absolute; left: 60px; right: 60px; top: 1010px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+      #tc-lease { top: 520px; }
+      #units { position: absolute; left: 60px; right: 60px; top: 790px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
       .unit { height: 150px; border-radius: 24px; background: #fff; color: var(--sand); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(28,28,31,.08); }
-      #units-label { position: absolute; left: 60px; right: 60px; top: 1370px; text-align: center; padding: 30px 0; border-radius: 30px; background: var(--sand); font-family: var(--font-display); font-weight: 900; font-size: 84px; letter-spacing: -.01em; text-transform: uppercase; }
+      #units-label { position: absolute; left: 60px; right: 60px; top: 1150px; text-align: center; padding: 30px 0; border-radius: 30px; background: var(--sand); font-family: var(--font-display); font-weight: 900; font-size: 84px; letter-spacing: -.01em; text-transform: uppercase; }
 
       /* eta */
       #eta-head { position: absolute; left: 60px; right: 60px; top: 210px; }
@@ -450,7 +450,6 @@ HTML = r"""<!doctype html>
         <div class="grid"></div>
         <div id="status-head"><div class="kicker">Info projek</div><div class="mega">Status</div></div>
         <div class="tcard" id="tc-lease"><div class="k">Pegangan</div><div class="v">Leasehold</div></div>
-        <div class="tcard" id="tc-rizab"><div class="k">Status tanah</div><div class="v">Rizab Melayu</div></div>
         <div id="units">__UNITS__</div>
         <div id="units-label">8 unit sahaja</div>
       </div>
@@ -604,7 +603,7 @@ HTML = r"""<!doctype html>
 
       /* 6 · STATUS */
       tl.fromTo("#status-head", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .4, ease: "power3.out" }, v(35.6));
-      popIn("#tc-lease", 36.87, { x: -100, y: 0 }); popIn("#tc-rizab", 37.43, { x: -100, y: 0 });
+      popIn("#tc-lease", 36.87, { x: -100, y: 0 });
       tl.fromTo(".unit", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: .3, stagger: .085, ease: "back.out(2.4)" }, v(38.55));
       popIn("#units-label", 39.23, { scale: 1.5, y: 0 });
       tl.to(".unit", { color: "#1c1c1f", duration: .2, stagger: .04 }, v(39.4));

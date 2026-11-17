@@ -9,6 +9,7 @@ REMOVE = [  # word sequences removed from the VO
     "Dari segi lokasi pula,",
     "Lagi menarik,",
     "Kalau berminat nak tahu lebih lanjut atau",
+    "Rizab Melayu",   # TikTok removed the video under Community Guidelines; likely flagged as discriminatory
 ]
 d = json.load(open("assets/vo/voiceover-tight.words.json")); words = d["words"]; dur = d["duration"]
 norm = lambda w: w.lower().strip(".,")
